@@ -1,7 +1,7 @@
 # GoAPI ハンズオン 最終更新日:11/16
 
 Vue.js で実装したアプリのバックエンド部分です。<br>
-<http://kemper0530.com:9000>
+<https://github.com/KEMPER0530/vue-handson>
 
 ## 開発環境
 - go 1.13.4 darwin/amd64
