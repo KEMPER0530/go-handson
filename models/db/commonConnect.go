@@ -3,21 +3,14 @@ package db
 import (
 	// フォーマットI/O
 	"fmt"
-	"log"
 	"os"
 
 	// Go言語のORM
 	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
 )
 
 // DB接続する
 func open() *gorm.DB {
-	// 環境変数ファイルの読込
-	err := godotenv.Load(fmt.Sprintf("config/production.env"))
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 
 	// 環境変数から値を取得
 	dbms := os.Getenv("DBMS")

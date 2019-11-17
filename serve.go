@@ -2,10 +2,13 @@ package main
 
 import (
 	// ロギングを行うパッケージ
+	"fmt"
 	"log"
+	"os"
 
 	// Gin
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	// MySQL用ドライバ
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -15,11 +18,18 @@ import (
 )
 
 func main() {
+	// 環境変数ファイルの読込
+	err := godotenv.Load(fmt.Sprintf("config/production.env"))
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	PORT := os.Getenv("PORT")
+
 	// サーバーを起動する
-	serve()
+	serve(":" + PORT)
 }
 
-func serve() {
+func serve(port string) {
 	// デフォルトのミドルウェアでginのルーターを作成
 	// Logger と アプリケーションクラッシュをキャッチするRecoveryミドルウェア を保有しています
 	router := gin.Default()
@@ -29,14 +39,14 @@ func serve() {
 
 	// ルーターの設定
 	// ログインID、パスワードを返却する
-	router.GET("/fetchLoginInfo", controller.FetchLoginInfo)
+	router.POST("/fetchLoginInfo", controller.FetchLoginInfo)
 
 	// メンバー情報のJSONを返す
 	router.GET("/fetchAllMembers", controller.FetchAllMembers)
 
 	// work情報のJSONを返す
 	router.GET("/fetchAllWorker", controller.FetchAllWorker)
-	if err := router.Run(":8090"); err != nil {
+	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
 	}
 }

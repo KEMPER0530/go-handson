@@ -1,6 +1,10 @@
 package db
 
 import (
+	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
+
 	// エンティティ(データベースのテーブルの行に対応)
 	entity "github.com/kemper0530/go-handson/models/entity"
 )
@@ -16,15 +20,47 @@ func FetchAllMembers() []entity.Testmember {
 }
 
 // ログイン情報を取得する
-func FindLoginID(username string) []entity.Login_info {
+func FindLoginID(username string, password string) entity.LoginRslt {
 	login_info := []entity.Login_info{}
+	loginrslt := entity.LoginRslt{}
+
+	// ハッシュ値の生成
+	// hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	// if err != nil {
+	// 	log.Panic("Error bcrypt.GenerateFromPassword!")
+	// 	loginrslt.Responce = 500
+	// 	loginrslt.Result = 0
+	// 	return loginrslt
+	// }
 
 	db := open()
+
 	// select
 	db.First(&login_info, "username=?", username)
+
+	// verify
+	errLogin := verify(login_info[0].Password, password)
+
+	if len(login_info) == 1 && errLogin == nil {
+		fmt.Println("ok!")
+		// ログイン成功
+		loginrslt.Responce = 200
+		loginrslt.Result = 1
+	} else {
+		fmt.Println("err: ", errLogin)
+		// ログイン失敗
+		loginrslt.Responce = 200
+		loginrslt.Result = 0
+	}
+
 	close(db)
 
-	return login_info
+	return loginrslt
+}
+
+// verify
+func verify(hash, s string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(s))
 }
 
 // work全件取得する

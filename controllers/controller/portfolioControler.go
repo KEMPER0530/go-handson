@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -28,15 +27,14 @@ func FetchAllWorker(c *gin.Context) {
 
 // FetchLoginInfo は 指定したIDのパスワードを取得する
 func FetchLoginInfo(c *gin.Context) {
-	username := c.Query("username")
+	username := c.PostForm("username")
+	password := c.PostForm("password")
 
-	if len(username) == 0 {
+	if len(username) == 0 || len(password) == 0 {
 		log.Panic("Error nothing URL parameter!!")
 	}
 
-	fmt.Printf(username)
-
-	resultProduct := db.FindLoginID(username)
+	resultProduct := db.FindLoginID(username, password)
 
 	// URLへのアクセスに対してJSONを返す
 	c.JSON(200, resultProduct)
