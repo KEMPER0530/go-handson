@@ -1,7 +1,6 @@
 package main
 
 import (
-	// ロギングを行うパッケージ
 	"fmt"
 	"log"
 	"os"

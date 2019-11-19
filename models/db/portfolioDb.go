@@ -5,6 +5,9 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	// constクラス
+	cnst "github.com/kemper0530/go-handson/common"
+
 	// エンティティ(データベースのテーブルの行に対応)
 	entity "github.com/kemper0530/go-handson/models/entity"
 )
@@ -38,19 +41,26 @@ func FindLoginID(username string, password string) entity.LoginRslt {
 	// select
 	db.First(&login_info, "username=?", username)
 
-	// verify
-	errLogin := verify(login_info[0].Password, password)
+	if len(login_info) == cnst.ONE {
+		// verify
+		errLogin := verify(login_info[0].Password, password)
 
-	if len(login_info) == 1 && errLogin == nil {
-		fmt.Println("ok!")
-		// ログイン成功
-		loginrslt.Responce = 200
-		loginrslt.Result = 1
+		if errLogin == nil {
+			fmt.Println("ok!")
+			// ログイン成功
+			loginrslt.Responce = cnst.JsonStatusOK
+			loginrslt.Result = cnst.ONE
+		} else {
+			fmt.Println("err: ", errLogin)
+			// ログイン失敗
+			loginrslt.Responce = cnst.JsonStatusOK
+			loginrslt.Result = cnst.ZERO
+		}
 	} else {
-		fmt.Println("err: ", errLogin)
+		fmt.Println("err no data: ")
 		// ログイン失敗
-		loginrslt.Responce = 200
-		loginrslt.Result = 0
+		loginrslt.Responce = cnst.JsonStatusOK
+		loginrslt.Result = cnst.ZERO
 	}
 
 	close(db)
