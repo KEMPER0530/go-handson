@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -26,15 +27,6 @@ func FetchAllMembers() []entity.Testmember {
 func FindLoginID(username string, password string) entity.LoginRslt {
 	login_info := []entity.Login_info{}
 	loginrslt := entity.LoginRslt{}
-
-	// ハッシュ値の生成
-	// hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	// if err != nil {
-	// 	log.Panic("Error bcrypt.GenerateFromPassword!")
-	// 	loginrslt.Responce = 500
-	// 	loginrslt.Result = 0
-	// 	return loginrslt
-	// }
 
 	db := open()
 
@@ -82,4 +74,46 @@ func FetchAllWorker() []entity.Work {
 	close(db)
 
 	return work
+}
+
+// ログイン情報を取得する
+func AddCardInfo(cardnumber string, cardname string, cardmonth int, cardyear int, cardcvv string) entity.CrdRgstRslt {
+	crdcardinfo := []entity.Crdcardinfo{}
+	crdRgstRslt := entity.CrdRgstRslt{}
+
+	// ハッシュ値の生成　セキュリティコードはbcryptで暗号化して登録
+	hashCardcvv, err := bcrypt.GenerateFromPassword([]byte(cardcvv), bcrypt.DefaultCost)
+	if err != nil {
+		log.Panic("Error bcrypt.GenerateFromPassword!")
+		crdRgstRslt.Responce = cnst.JsonStatusNG
+		crdRgstRslt.Result = cnst.ZERO
+		return crdRgstRslt
+	}
+
+	db := open()
+
+	// select
+	db.First(&crdcardinfo, "cardnumber=?", cardnumber)
+
+	if len(crdcardinfo) == cnst.ONE {
+		// 登録失敗
+		crdRgstRslt.Responce = cnst.JsonStatusOK
+		crdRgstRslt.Result = cnst.TWO
+	} else {
+		var crdcardinfoIns = entity.Crdcardinfo{
+			Cardnumber: cardnumber,
+			Cardname:   cardname,
+			Cardmonth:  cardmonth,
+			Cardyear:   cardyear,
+			Cardcvv:    string(hashCardcvv),
+		}
+		// insert
+		db.Create(&crdcardinfoIns)
+		crdRgstRslt.Responce = cnst.JsonStatusOK
+		crdRgstRslt.Result = cnst.ONE
+	}
+
+	close(db)
+
+	return crdRgstRslt
 }
