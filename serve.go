@@ -45,6 +45,10 @@ func serve(port string) {
 
 	// work情報のJSONを返す
 	router.GET("/fetchAllWorker", controller.FetchAllWorker)
+
+	// クレジットカード情報を登録し、結果のJSONを返す
+	router.POST("/fetchCreditInfoRegist", controller.FetchCreditInfoRegist)
+
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
 	}
