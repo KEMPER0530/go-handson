@@ -10,6 +10,12 @@ const (
 	// JSON返却時のNGレスポンス
 	JsonStatusNG int = 500
 
+	// テナントID
+	TNNTID string = "9999"
+
+	// サーバID
+	SERVID string = "kemper0530.com"
+
 	// ZERO
 	ZERO int = 0
 	// ONE

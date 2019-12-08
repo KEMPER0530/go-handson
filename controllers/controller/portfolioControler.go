@@ -63,3 +63,23 @@ func FetchCreditInfoRegist(c *gin.Context) {
 	// URLへのアクセスに対してJSONを返す
 	c.JSON(cnst.HttpStatusOK, resultProduct)
 }
+
+// お問合せ内容を登録する
+func FetchSendMailRegist(c *gin.Context) {
+	to_email := c.PostForm("to_email")
+	name := c.PostForm("name")
+	text := c.PostForm("text")
+	from_email := c.PostForm("from_email")
+	personal_name := c.PostForm("personal_name")
+
+	if len(to_email) == cnst.ZERO &&
+		len(name) == cnst.ZERO &&
+		len(text) == cnst.ZERO {
+		log.Panic("Error nothing URL parameter!!")
+	}
+
+	resultProduct := db.SendMailRegist(to_email, name, text, from_email, personal_name)
+
+	// URLへのアクセスに対してJSONを返す
+	c.JSON(cnst.HttpStatusOK, resultProduct)
+}
