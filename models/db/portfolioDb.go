@@ -28,9 +28,9 @@ func FetchAllMembers() []entity.Testmember {
 }
 
 // ログイン情報を取得する
-func FindLoginID(username string, password string) entity.LoginRslt {
+func FindLoginID(username string, password string) entity.Rslt {
 	login_info := []entity.Login_info{}
-	loginrslt := entity.LoginRslt{}
+	Rslt := entity.Rslt{}
 
 	db := open()
 
@@ -44,24 +44,24 @@ func FindLoginID(username string, password string) entity.LoginRslt {
 		if errLogin == nil {
 			fmt.Println("ok!")
 			// ログイン成功
-			loginrslt.Responce = cnst.JsonStatusOK
-			loginrslt.Result = cnst.ONE
+			Rslt.Responce = cnst.JsonStatusOK
+			Rslt.Result = cnst.ONE
 		} else {
 			fmt.Println("err: ", errLogin)
 			// ログイン失敗
-			loginrslt.Responce = cnst.JsonStatusOK
-			loginrslt.Result = cnst.ZERO
+			Rslt.Responce = cnst.JsonStatusOK
+			Rslt.Result = cnst.ZERO
 		}
 	} else {
 		fmt.Println("err no data: ")
 		// ログイン失敗
-		loginrslt.Responce = cnst.JsonStatusOK
-		loginrslt.Result = cnst.ZERO
+		Rslt.Responce = cnst.JsonStatusOK
+		Rslt.Result = cnst.ZERO
 	}
 
 	close(db)
 
-	return loginrslt
+	return Rslt
 }
 
 // verify
@@ -81,17 +81,17 @@ func FetchAllWorker() []entity.Work {
 }
 
 // カード情報を登録する
-func AddCardInfo(cardnumber string, cardname string, cardmonth int, cardyear int, cardcvv string) entity.CrdRgstRslt {
+func AddCardInfo(cardnumber string, cardname string, cardmonth int, cardyear int, cardcvv string) entity.Rslt {
 	crdcardinfo := []entity.Crdcardinfo{}
-	crdRgstRslt := entity.CrdRgstRslt{}
+	Rslt := entity.Rslt{}
 
 	// ハッシュ値の生成　セキュリティコードはbcryptで暗号化して登録
 	hashCardcvv, err := bcrypt.GenerateFromPassword([]byte(cardcvv), bcrypt.DefaultCost)
 	if err != nil {
 		log.Panic("Error bcrypt.GenerateFromPassword!")
-		crdRgstRslt.Responce = cnst.JsonStatusNG
-		crdRgstRslt.Result = cnst.ZERO
-		return crdRgstRslt
+		Rslt.Responce = cnst.JsonStatusNG
+		Rslt.Result = cnst.ZERO
+		return Rslt
 	}
 
 	db := open()
@@ -101,8 +101,8 @@ func AddCardInfo(cardnumber string, cardname string, cardmonth int, cardyear int
 
 	if len(crdcardinfo) == cnst.ONE {
 		// 登録失敗
-		crdRgstRslt.Responce = cnst.JsonStatusOK
-		crdRgstRslt.Result = cnst.TWO
+		Rslt.Responce = cnst.JsonStatusOK
+		Rslt.Result = cnst.TWO
 	} else {
 		var crdcardinfoIns = entity.Crdcardinfo{
 			Cardnumber: cardnumber,
@@ -113,21 +113,21 @@ func AddCardInfo(cardnumber string, cardname string, cardmonth int, cardyear int
 		}
 		// insert
 		db.Create(&crdcardinfoIns)
-		crdRgstRslt.Responce = cnst.JsonStatusOK
-		crdRgstRslt.Result = cnst.ONE
+		Rslt.Responce = cnst.JsonStatusOK
+		Rslt.Result = cnst.ONE
 	}
 
 	close(db)
 
-	return crdRgstRslt
+	return Rslt
 }
 
 // お問合せ内容を登録する
-func SendMailRegist(to_email string, name string, text string, from_email string, personal_name string) entity.SendMailRslt {
+func SendMailRegist(to_email string, name string, text string, from_email string, personal_name string) entity.Rslt {
 
 	mail_send_rslt := []entity.Mail_send_rslt{}
 	mst_ssmlknr := []entity.Mst_ssmlknr{}
-	sendMailRslt := entity.SendMailRslt{}
+	Rslt := entity.Rslt{}
 
 	db := open()
 
@@ -146,9 +146,9 @@ func SendMailRegist(to_email string, name string, text string, from_email string
 	if err != nil {
 		fmt.Println(err)
 		// 登録失敗
-		sendMailRslt.Responce = cnst.JsonStatusOK
-		sendMailRslt.Result = cnst.TWO
-		return sendMailRslt
+		Rslt.Responce = cnst.JsonStatusOK
+		Rslt.Result = cnst.TWO
+		return Rslt
 	}
 	msgid1 := u.String()
 
@@ -157,9 +157,9 @@ func SendMailRegist(to_email string, name string, text string, from_email string
 	if err2 != nil {
 		fmt.Println(err2)
 		// 登録失敗
-		sendMailRslt.Responce = cnst.JsonStatusOK
-		sendMailRslt.Result = cnst.TWO
-		return sendMailRslt
+		Rslt.Responce = cnst.JsonStatusOK
+		Rslt.Result = cnst.TWO
+		return Rslt
 	}
 	msgid2 := u2.String()
 
@@ -233,10 +233,10 @@ func SendMailRegist(to_email string, name string, text string, from_email string
 	db.Create(&mail_send_infIns)
 	db.Create(&mail_send_rsltIns)
 
-	sendMailRslt.Responce = cnst.JsonStatusOK
-	sendMailRslt.Result = cnst.ONE
+	Rslt.Responce = cnst.JsonStatusOK
+	Rslt.Result = cnst.ONE
 
 	close(db)
 
-	return sendMailRslt
+	return Rslt
 }

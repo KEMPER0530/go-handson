@@ -1,10 +1,15 @@
 package controller
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+
+	// JobRunner
+	"github.com/bamzi/jobrunner"
 
 	// constクラス
 	cnst "github.com/kemper0530/go-handson/common"
@@ -12,12 +17,23 @@ import (
 	db "github.com/kemper0530/go-handson/models/db"
 )
 
+// メールバッチ処理
+func FetchMailSendSelect() {
+	resultProduct := db.FetchMailSendSelect()
+	fmt.Println("Run AmazonMail SES! %s", resultProduct)
+}
+
+// メールバッチステータスを返却する
+func FetchMailBatchStatus(c *gin.Context) {
+	c.JSON(http.StatusOK, jobrunner.StatusJson())
+}
+
 // FetchAllMembers は メンバー情報を取得する
 func FetchAllMembers(c *gin.Context) {
 	resultProducts := db.FetchAllMembers()
 
 	// URLへのアクセスに対してJSONを返す
-	c.JSON(cnst.HttpStatusOK, resultProducts)
+	c.JSON(http.StatusOK, resultProducts)
 }
 
 // work情報を取得する
@@ -25,7 +41,7 @@ func FetchAllWorker(c *gin.Context) {
 	resultProducts := db.FetchAllWorker()
 
 	// URLへのアクセスに対してJSONを返す
-	c.JSON(cnst.HttpStatusOK, resultProducts)
+	c.JSON(http.StatusOK, resultProducts)
 }
 
 // FetchLoginInfo は 指定したIDのパスワードを取得する
@@ -40,7 +56,7 @@ func FetchLoginInfo(c *gin.Context) {
 	resultProduct := db.FindLoginID(username, password)
 
 	// URLへのアクセスに対してJSONを返す
-	c.JSON(cnst.HttpStatusOK, resultProduct)
+	c.JSON(http.StatusOK, resultProduct)
 }
 
 // クレジットカード情報を登録する
@@ -61,7 +77,7 @@ func FetchCreditInfoRegist(c *gin.Context) {
 	resultProduct := db.AddCardInfo(cardnumber, cardname, cardmonthInt, cardyearInt, cardcvv)
 
 	// URLへのアクセスに対してJSONを返す
-	c.JSON(cnst.HttpStatusOK, resultProduct)
+	c.JSON(http.StatusOK, resultProduct)
 }
 
 // お問合せ内容を登録する
@@ -81,5 +97,5 @@ func FetchSendMailRegist(c *gin.Context) {
 	resultProduct := db.SendMailRegist(to_email, name, text, from_email, personal_name)
 
 	// URLへのアクセスに対してJSONを返す
-	c.JSON(cnst.HttpStatusOK, resultProduct)
+	c.JSON(http.StatusOK, resultProduct)
 }

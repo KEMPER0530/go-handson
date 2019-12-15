@@ -22,4 +22,10 @@ const (
 	ONE int = 1
 	// TWO
 	TWO int = 2
+	// THREE
+	THREE int = 3
+	// FOUR
+	FOUR int = 4
+	// QueueID
+	QUEUEID string = "Amazon SES"
 )
