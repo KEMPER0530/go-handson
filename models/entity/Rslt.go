@@ -1,6 +1,6 @@
 package entity
 
-type CrdRgstRslt struct {
+type Rslt struct {
 	Responce int
 	Result   int
 }

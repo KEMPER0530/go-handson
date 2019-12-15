@@ -9,6 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
+	// JobRunner
+	"github.com/bamzi/jobrunner"
+
 	// MySQL用ドライバ
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
@@ -28,7 +31,20 @@ func main() {
 	serve(":" + PORT)
 }
 
+// dummy ...
+type dummy struct {
+}
+
+// Run ...
+func (e dummy) Run() {
+	controller.FetchMailSendSelect()
+}
+
 func serve(port string) {
+
+	// バッチ起動スタート
+	jobrunner.Start()
+	jobrunner.Schedule(os.Getenv("SCHEDULE"), dummy{})
 	// デフォルトのミドルウェアでginのルーターを作成
 	// Logger と アプリケーションクラッシュをキャッチするRecoveryミドルウェア を保有しています
 	router := gin.Default()
@@ -51,6 +67,9 @@ func serve(port string) {
 
 	// お問合せフォーム内容を登録し、メールを送信するかつ結果のJSONを返す
 	router.POST("/fetchSendMailRegist", controller.FetchSendMailRegist)
+
+	// メールバッチのステータスを返却する
+	router.GET("/fetchMailBatchStatus", controller.FetchMailBatchStatus)
 
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
