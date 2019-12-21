@@ -71,6 +71,9 @@ func serve(port string) {
 	// メールバッチのステータスを返却する
 	router.GET("/fetchMailBatchStatus", controller.FetchMailBatchStatus)
 
+	// profile情報のJSONを返す
+	router.GET("/fetchProfileInfo", controller.FetchProfileInfo)
+
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
 	}

@@ -240,3 +240,14 @@ func SendMailRegist(to_email string, name string, text string, from_email string
 
 	return Rslt
 }
+
+// profile全件取得する
+func FetchProfileInfo() []entity.Profile {
+	profile := []entity.Profile{}
+
+	db := open()
+	db.Order("id asc").Find(&profile)
+	close(db)
+
+	return profile
+}

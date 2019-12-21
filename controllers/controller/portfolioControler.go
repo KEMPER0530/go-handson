@@ -99,3 +99,11 @@ func FetchSendMailRegist(c *gin.Context) {
 	// URLへのアクセスに対してJSONを返す
 	c.JSON(http.StatusOK, resultProduct)
 }
+
+// profile情報を取得する
+func FetchProfileInfo(c *gin.Context) {
+	resultProducts := db.FetchProfileInfo()
+
+	// URLへのアクセスに対してJSONを返す
+	c.JSON(http.StatusOK, resultProducts)
+}
