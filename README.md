@@ -1,4 +1,4 @@
-# GoAPI ハンズオン 最終更新日:12/15
+# GoAPI ハンズオン 最終更新日:12/25
 
 Vue.js で実装したアプリのバックエンド部分です。<br>
 <https://github.com/KEMPER0530/vue-handson>
@@ -16,6 +16,7 @@ Vue.js で実装したアプリのバックエンド部分です。<br>
 - CORS対応済
 - クレジットカード情報登録API
 - AWS(SES)を利用したメール送信
+- アカウント登録API
 
 ## 本番環境
 - AWS(EC2)
