@@ -251,3 +251,45 @@ func FetchProfileInfo() []entity.Profile {
 
 	return profile
 }
+
+// アカウント情報を登録する
+func RegistLoginID(username string, password string) entity.Rslt {
+	login_info := []entity.Login_info{}
+	Rslt := entity.Rslt{}
+
+	db := open()
+
+	// 登録情報の確認
+	db.First(&login_info, "username=?", username)
+
+	if len(login_info) == cnst.ONE {
+		Rslt.Responce = cnst.JsonStatusOK
+		Rslt.Result = cnst.ZERO
+		return Rslt
+	}
+
+	// ハッシュ値の生成　パスワードはbcryptで暗号化して登録
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Panic("Error bcrypt.GenerateFromPassword!")
+		Rslt.Responce = cnst.JsonStatusNG
+		Rslt.Result = cnst.ZERO
+		return Rslt
+	}
+
+	// insert ログイン情報
+	var login_infIns = entity.Login_info{
+		Username: username,
+		Password: string(hashPassword),
+	}
+
+	// insert
+	db.Create(&login_infIns)
+
+	Rslt.Responce = cnst.JsonStatusOK
+	Rslt.Result = cnst.ONE
+
+	close(db)
+
+	return Rslt
+}

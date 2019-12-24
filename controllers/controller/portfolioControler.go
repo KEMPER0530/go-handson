@@ -107,3 +107,18 @@ func FetchProfileInfo(c *gin.Context) {
 	// URLへのアクセスに対してJSONを返す
 	c.JSON(http.StatusOK, resultProducts)
 }
+
+// FetchRegistAcount は アカウントの登録を実施する
+func FetchRegistAccount(c *gin.Context) {
+	username := c.PostForm("email")
+	password := c.PostForm("password")
+
+	if len(username) == cnst.ZERO || len(password) == cnst.ZERO {
+		log.Panic("Error nothing URL parameter!!")
+	}
+
+	resultProduct := db.RegistLoginID(username, password)
+
+	// URLへのアクセスに対してJSONを返す
+	c.JSON(http.StatusOK, resultProduct)
+}
