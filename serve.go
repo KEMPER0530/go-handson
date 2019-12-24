@@ -74,6 +74,9 @@ func serve(port string) {
 	// profile情報のJSONを返す
 	router.GET("/fetchProfileInfo", controller.FetchProfileInfo)
 
+	// アカウント情報を登録し、結果をJSONを返す
+	router.POST("/fetchRegistAccount", controller.FetchRegistAccount)
+
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
 	}
