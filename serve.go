@@ -54,28 +54,28 @@ func serve(port string) {
 
 	// ルーターの設定
 	// ログインID、パスワードを返却する
-	router.POST("/fetchLoginInfo", controller.FetchLoginInfo)
+	router.POST("/api/fetchLoginInfo", controller.FetchLoginInfo)
 
 	// メンバー情報のJSONを返す
-	router.GET("/fetchAllMembers", controller.FetchAllMembers)
+	router.GET("/api/fetchAllMembers", controller.FetchAllMembers)
 
 	// work情報のJSONを返す
-	router.GET("/fetchAllWorker", controller.FetchAllWorker)
+	router.GET("/api/fetchAllWorker", controller.FetchAllWorker)
 
 	// クレジットカード情報を登録し、結果のJSONを返す
-	router.POST("/fetchCreditInfoRegist", controller.FetchCreditInfoRegist)
+	router.POST("/api/fetchCreditInfoRegist", controller.FetchCreditInfoRegist)
 
 	// お問合せフォーム内容を登録し、メールを送信するかつ結果のJSONを返す
-	router.POST("/fetchSendMailRegist", controller.FetchSendMailRegist)
+	router.POST("/api/fetchSendMailRegist", controller.FetchSendMailRegist)
 
 	// メールバッチのステータスを返却する
-	router.GET("/fetchMailBatchStatus", controller.FetchMailBatchStatus)
+	router.GET("/api/fetchMailBatchStatus", controller.FetchMailBatchStatus)
 
 	// profile情報のJSONを返す
-	router.GET("/fetchProfileInfo", controller.FetchProfileInfo)
+	router.GET("/api/fetchProfileInfo", controller.FetchProfileInfo)
 
 	// アカウント情報を登録し、結果をJSONを返す
-	router.POST("/fetchRegistAccount", controller.FetchRegistAccount)
+	router.POST("/api/fetchRegistAccount", controller.FetchRegistAccount)
 
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
