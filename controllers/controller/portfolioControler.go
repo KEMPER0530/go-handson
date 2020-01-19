@@ -94,7 +94,15 @@ func FetchSendMailRegist(c *gin.Context) {
 		log.Panic("Error nothing URL parameter!!")
 	}
 
-	resultProduct := db.SendMailRegist(to_email, name, text, from_email, personal_name)
+	// 顧客向けのメール情報を設定する
+	Mail_send_rslt := db.SetMailSendRslt()
+	Mail_send_inf := db.SetMailSendInf2C(to_email, name, text, from_email, personal_name, Mail_send_rslt.Msg_id, cnst.ONE)
+	resultProduct := db.SetMailRegist(&Mail_send_inf, &Mail_send_rslt)
+
+	// 管理者向けのメール情報を設定する
+	Mail_send_rslt = db.SetMailSendRslt()
+	Mail_send_inf = db.SetMailSendInf2Y(to_email, name, text, from_email, personal_name, Mail_send_rslt.Msg_id, cnst.ONE)
+	resultProduct = db.SetMailRegist(&Mail_send_inf, &Mail_send_rslt)
 
 	// URLへのアクセスに対してJSONを返す
 	c.JSON(http.StatusOK, resultProduct)
@@ -118,6 +126,27 @@ func FetchRegistAccount(c *gin.Context) {
 	}
 
 	resultProduct := db.RegistLoginID(username, password)
+
+	// URLへのアクセスに対してJSONを返す
+	c.JSON(http.StatusOK, resultProduct)
+}
+
+// FetchRegistAcountMail は 送信先へのメール情報を登録する
+func FetchRegistAccountMail(c *gin.Context) {
+	to_email := c.PostForm("to_email")
+	name := c.PostForm("name")
+	text := c.PostForm("text")
+	from_email := c.PostForm("from_email")
+	personal_name := c.PostForm("personal_name")
+
+	if len(to_email) == cnst.ZERO {
+		log.Panic("Error nothing URL parameter!!")
+	}
+
+	// 顧客向けのメール情報を設定する
+	Mail_send_rslt := db.SetMailSendRslt()
+	Mail_send_inf := db.SetMailSendInf2C(to_email, name, text, from_email, personal_name, Mail_send_rslt.Msg_id, cnst.TWO)
+	resultProduct := db.SetMailRegist(&Mail_send_inf, &Mail_send_rslt)
 
 	// URLへのアクセスに対してJSONを返す
 	c.JSON(http.StatusOK, resultProduct)

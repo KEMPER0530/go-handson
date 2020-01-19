@@ -122,7 +122,133 @@ func AddCardInfo(cardnumber string, cardname string, cardmonth int, cardyear int
 	return Rslt
 }
 
-// お問合せ内容を登録する
+// メール送信結果テーブルを設定する
+func SetMailSendRslt() entity.Mail_send_rslt {
+
+	mail_send_rslt := []entity.Mail_send_rslt{}
+
+	db := open()
+
+	// 送信連番の取得
+	count := cnst.ZERO
+	sendno := cnst.ZERO
+
+	db.Find(&mail_send_rslt).Count(&count)
+	sendno = count + 1
+
+	// テナントIDの定義
+	tnntid := cnst.TNNTID
+
+	// msg_idの生成
+	u, err := uuid.NewRandom()
+	if err != nil {
+		fmt.Println(err)
+		// 登録失敗
+		return mail_send_rslt[0]
+	}
+	msgid := u.String()
+
+	// 日本時間へ変換
+	jst, _ := time.LoadLocation("Asia/Tokyo")
+	_time := time.Now().In(jst)
+
+	// insert メール送信結果情報(顧客用)
+	mail_send_rsltIns := entity.Mail_send_rslt{
+		Send_no:         sendno,
+		Msg_id:          msgid,
+		Tnnt_id:         tnntid,
+		Target_sys_type: strconv.Itoa(cnst.ONE),
+		Status:          strconv.Itoa(cnst.ZERO),
+		Server_id:       cnst.SERVID,
+		Priority:        cnst.ONE,
+		Send_reg_at:     _time,
+		Queue_remove:    strconv.Itoa(cnst.ZERO),
+		Updated_at:      _time,
+	}
+
+	close(db)
+
+	return mail_send_rsltIns
+
+}
+
+// メール送信情報テーブルを設定
+func SetMailSendInf2C(to_email string, name string, text string, from_email string, personal_name string, msgid string, id int) entity.Mail_send_inf {
+
+	mst_ssmlknr := []entity.Mst_ssmlknr{}
+
+	db := open()
+
+	// 送信管理マスタの取得
+	db.Where("id = ?", id).First(&mst_ssmlknr)
+	subject := mst_ssmlknr[0].Subject
+	body := mst_ssmlknr[0].Body
+
+	// 文字列の置き換え　$1　→　登録名
+	_body := strings.Replace(body, "$1", name, -1)
+
+	// insert メール送信情報(顧客用)
+	mail_send_infIns := entity.Mail_send_inf{
+		Msg_id:        msgid,
+		From_email:    from_email,
+		To_email:      to_email,
+		Subject:       subject,
+		Body:          _body,
+		Personal_name: personal_name,
+	}
+
+	close(db)
+
+	return mail_send_infIns
+}
+
+// メール送信情報テーブルを設定
+func SetMailSendInf2Y(to_email string, name string, text string, from_email string, personal_name string, msgid string, id int) entity.Mail_send_inf {
+
+	mst_ssmlknr := []entity.Mst_ssmlknr{}
+
+	db := open()
+
+	// 送信管理マスタの取得
+	db.Where("id = ?", id).First(&mst_ssmlknr)
+	replytitle := mst_ssmlknr[0].Replytitle
+	toreply := mst_ssmlknr[0].Toreply
+
+	// insert メール送信情報(送信者用)
+	mail_send_infIns := entity.Mail_send_inf{
+		Msg_id:        msgid,
+		From_email:    from_email,
+		To_email:      toreply,
+		Subject:       replytitle,
+		Body:          text,
+		Personal_name: personal_name,
+	}
+
+	close(db)
+
+	return mail_send_infIns
+}
+
+// お問合せ内容をメール送信情報テーブル、結果テーブルへ登録する
+func SetMailRegist(sendInf *entity.Mail_send_inf, sendRslt *entity.Mail_send_rslt) entity.Rslt {
+
+	Rslt := entity.Rslt{}
+
+	db := open()
+
+	// insert
+	db.Create(&sendInf)
+	db.Create(&sendRslt)
+
+	Rslt.Responce = cnst.JsonStatusOK
+	Rslt.Result = cnst.ONE
+
+	close(db)
+
+	return Rslt
+}
+
+// お問合せ内容をメール送信情報テーブル、結果テーブルへ登録する
 func SendMailRegist(to_email string, name string, text string, from_email string, personal_name string) entity.Rslt {
 
 	mail_send_rslt := []entity.Mail_send_rslt{}

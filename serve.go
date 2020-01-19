@@ -21,7 +21,7 @@ import (
 
 func main() {
 	// 環境変数ファイルの読込
-	err := godotenv.Load(fmt.Sprintf("config/production.env"))
+	err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -45,9 +45,18 @@ func serve(port string) {
 	// バッチ起動スタート
 	jobrunner.Start()
 	jobrunner.Schedule(os.Getenv("SCHEDULE"), dummy{})
+
 	// デフォルトのミドルウェアでginのルーターを作成
 	// Logger と アプリケーションクラッシュをキャッチするRecoveryミドルウェア を保有しています
 	router := gin.Default()
+
+	// 本番設定の場合
+	if os.Getenv("GO_ENV") == "production" {
+		// 環境変数を設定します.
+		os.Setenv("GIN_MODE", "release")
+		gin.SetMode(gin.ReleaseMode)
+		router = gin.New()
+	}
 
 	// CORS対応
 	router.Use(Cors())
@@ -76,6 +85,9 @@ func serve(port string) {
 
 	// アカウント情報を登録し、結果をJSONを返す
 	router.POST("/api/fetchRegistAccount", controller.FetchRegistAccount)
+
+	// アカウント登録後にメール送信する結果をJSONを返す
+	router.POST("/api/fetchRegistAccountMail", controller.FetchRegistAccountMail)
 
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)

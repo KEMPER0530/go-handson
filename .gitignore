@@ -1,3 +1,4 @@
 # Editor directories and files
 production.env
+development.env
 serve
