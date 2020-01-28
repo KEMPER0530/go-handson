@@ -1,4 +1,4 @@
-# GoAPI ハンズオン 最終更新日:12/31
+# GoAPI ハンズオン 最終更新日:1/28
 
 Vue.js で実装したアプリのバックエンド部分です。<br>
 <https://github.com/KEMPER0530/vue-handson>
@@ -8,6 +8,7 @@ Vue.js で実装したアプリのバックエンド部分です。<br>
 - Mysql:5.7
 - Dockerにて環境構築
 - Amazon Simple Email Serviceを利用したメール配信
+- Firebaseを利用してAPIでJWT検証の実施
 
 ## 機能一覧
 - ログイン情報の取得API
@@ -17,6 +18,7 @@ Vue.js で実装したアプリのバックエンド部分です。<br>
 - AWS(SES)を利用したメール送信
 - アカウント登録API
 - リバースプロキシ用にnginxを投入
+- Firebaseを利用し認証の実施
 
 ## 本番環境
 - AWS(EC2)
