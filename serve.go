@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	// Gin
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -57,9 +59,8 @@ func serve(port string) {
 		gin.SetMode(gin.ReleaseMode)
 		router = gin.New()
 	}
-
-	// CORS対応
-	router.Use(Cors())
+	// CORS設定
+	router.Use(setCors())
 
 	// ルーターの設定
 	// ログインID、パスワードを返却する
@@ -98,10 +99,18 @@ func serve(port string) {
 // that uses additional HTTP headers to let a
 // user agent gain permission to access selected resources from a server
 // on a different origin /(domain) than the site currently in use.
-func Cors() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Add("Content-Type", "application/json")
-		c.Next()
-	}
+// CORS for All origins, allowing:
+// - PUT and PATCH methods
+// - Origin header
+// - Credentials share
+// - Preflight requests cached for 1 hours
+func setCors() gin.HandlerFunc {
+	return cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS", "PUT", "PATCH"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Accept", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length", "Cache-Control", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           1 * time.Hour,
+	})
 }
