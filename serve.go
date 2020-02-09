@@ -39,7 +39,7 @@ type dummy struct {
 
 // Run ...
 func (e dummy) Run() {
-	controller.FetchMailSendSelect()
+	// controller.FetchMailSendSelect()
 }
 
 func serve(port string) {
