@@ -123,6 +123,9 @@ func FetchSendMailRegist(c *gin.Context) {
 		Mail_send_inf := db.SetMailSendInf2C(to_email, name, text, from_email, personal_name, Mail_send_rslt.Msg_id, cnst.ONE)
 		resultProduct := db.SetMailRegist(&Mail_send_inf, &Mail_send_rslt)
 
+		// メールバッチ処理を直接コールする
+		FetchMailSendSelect()
+
 		// 管理者向けのメール情報を設定する
 		Mail_send_rslt = db.SetMailSendRslt()
 		Mail_send_inf = db.SetMailSendInf2Y(to_email, name, text, from_email, personal_name, Mail_send_rslt.Msg_id, cnst.ONE)
@@ -130,6 +133,9 @@ func FetchSendMailRegist(c *gin.Context) {
 
 		// URLへのアクセスに対してJSONを返す
 		c.JSON(http.StatusOK, resultProduct)
+
+		// メールバッチ処理を直接コールする
+		FetchMailSendSelect()
 	}
 }
 
@@ -186,6 +192,9 @@ func FetchRegistAccountMail(c *gin.Context) {
 		Mail_send_rslt := db.SetMailSendRslt()
 		Mail_send_inf := db.SetMailSendInf2C(to_email, name, text, from_email, personal_name, Mail_send_rslt.Msg_id, cnst.TWO)
 		resultProduct := db.SetMailRegist(&Mail_send_inf, &Mail_send_rslt)
+
+		// メールバッチ処理を直接コールする
+		FetchMailSendSelect()
 
 		// URLへのアクセスに対してJSONを返す
 		c.JSON(http.StatusOK, resultProduct)
