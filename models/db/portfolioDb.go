@@ -42,18 +42,19 @@ func FindLoginID(username string, password string) entity.Rslt {
 		errLogin := verify(login_info[0].Password, password)
 
 		if errLogin == nil {
-			fmt.Println("ok!")
+			fmt.Println("Login success!")
 			// ログイン成功
 			Rslt.Responce = cnst.JsonStatusOK
 			Rslt.Result = cnst.ONE
+			Rslt.Name = login_info[0].Name
 		} else {
-			fmt.Println("err: ", errLogin)
+			fmt.Println("Login error: ", errLogin)
 			// ログイン失敗
 			Rslt.Responce = cnst.JsonStatusOK
 			Rslt.Result = cnst.ZERO
 		}
 	} else {
-		fmt.Println("err no data: ")
+		fmt.Println("Login error no data: ")
 		// ログイン失敗
 		Rslt.Responce = cnst.JsonStatusOK
 		Rslt.Result = cnst.ZERO
@@ -379,7 +380,7 @@ func FetchProfileInfo() []entity.Profile {
 }
 
 // アカウント情報を登録する
-func RegistLoginID(username string, password string) entity.Rslt {
+func RegistLoginID(username string, password string, name string) entity.Rslt {
 	login_info := []entity.Login_info{}
 	Rslt := entity.Rslt{}
 
@@ -407,6 +408,7 @@ func RegistLoginID(username string, password string) entity.Rslt {
 	var login_infIns = entity.Login_info{
 		Username: username,
 		Password: string(hashPassword),
+		Name:     name,
 	}
 
 	// insert

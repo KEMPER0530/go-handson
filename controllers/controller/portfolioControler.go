@@ -160,12 +160,13 @@ func FetchRegistAccount(c *gin.Context) {
 	} else {
 		username := c.PostForm("email")
 		password := c.PostForm("password")
+		name := c.PostForm("name")
 
 		if len(username) == cnst.ZERO || len(password) == cnst.ZERO {
 			log.Panic("Error nothing URL parameter!!")
 		}
 
-		resultProduct := db.RegistLoginID(username, password)
+		resultProduct := db.RegistLoginID(username, password, name)
 
 		// URLへのアクセスに対してJSONを返す
 		c.JSON(http.StatusOK, resultProduct)
