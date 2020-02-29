@@ -34,6 +34,3 @@ Vue.js で実装したアプリのバックエンド部分です。<br>
 - AWS(CloudFront)
 - AWS(ELB)
 - Firebase
-
-## 今後実装したいこと
-- CIの導入、テスト、デプロイの自動化
