@@ -191,20 +191,25 @@ func SetMailSendInf2C(to_email string, name string, text string, from_email stri
 	subject := mst_ssmlknr[0].Subject
 	body := mst_ssmlknr[0].Body
 
-	// tokenの取得
-	db.Where("email = ?", to_email).First(&tmpuserinfo)
-  token := tmpuserinfo[0].Token
-	// URLの生成
-	err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	// 仮登録の場合
+	if id == cnst.TWO {
+	  // tokenの取得
+	  db.Where("email = ?", to_email).First(&tmpuserinfo)
+		token := tmpuserinfo[0].Token
+	  // URLの生成
+	  err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
+	  if err != nil {
+		  log.Fatal("Error loading .env file")
+	  }
+	  path := os.Getenv("SIGN_UP_PATH")
+		query := path + "?token=" + token
+		
+		// 文字列の置き換え　$1　→　登録名、$2 -> URL
+	  body = strings.Replace(body, "$1", name, -1)
+	  body = strings.Replace(body, "$2", query, -1)
+	}else {
+		body = strings.Replace(body, "$1", name, -1)
 	}
-	path := os.Getenv("SIGN_UP_PATH")
-	query := path + "?token=" + token
-
-	// 文字列の置き換え　$1　→　登録名、$2 -> URL
-	_body := strings.Replace(body, "$1", name, -1)
-	_body = strings.Replace(_body, "$2", query, -1)
 
 	// insert メール送信情報(顧客用)
 	mail_send_infIns := entity.Mail_send_inf{
@@ -212,7 +217,7 @@ func SetMailSendInf2C(to_email string, name string, text string, from_email stri
 		From_email:    from_email,
 		To_email:      to_email,
 		Subject:       subject,
-		Body:          _body,
+		Body:          body,
 		Personal_name: personal_name,
 	}
 
