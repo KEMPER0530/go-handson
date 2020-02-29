@@ -84,11 +84,19 @@ func serve(port string) {
 	// profile情報のJSONを返す
 	router.GET("/api/fetchProfileInfo", controller.FetchProfileInfo)
 
-	// アカウント情報を登録し、結果をJSONを返す
+	// アカウント情報を仮登録し、結果をJSONを返す
 	router.POST("/api/fetchRegistAccount", controller.FetchRegistAccount)
 
-	// アカウント登録後にメール送信する結果をJSONを返す
+	// 仮登録後にメール送信する結果をJSONを返す
 	router.POST("/api/fetchRegistAccountMail", controller.FetchRegistAccountMail)
+
+	// ログインIDを受取り、氏名とメールアドレスを返却する
+	router.POST("/api/fetchMailAdrInfo", controller.FetchMailAdrInfo)
+
+	// 仮パスワードのリンクを押下された場合の挙動
+	router.Static("/static/css", "./static/css")
+	router.LoadHTMLGlob("templates/*.tmpl")
+	router.GET("/api/fetchSignUpAccountMail", controller.FetchSignUpAccountMail)
 
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
