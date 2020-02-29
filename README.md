@@ -2,6 +2,8 @@
 
 Vue.js で実装したアプリのバックエンド部分です。<br>
 <https://github.com/KEMPER0530/vue-handson>
+
+## 構成図
 ![Architecture Diagram](https://d3p7ybpyhwl4ka.cloudfront.net/static/img/aws-Diagram.svg)
 
 ## 開発環境
