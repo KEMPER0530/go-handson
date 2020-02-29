@@ -1,8 +1,11 @@
 package db
 
 import (
+	//b64 "encoding/base64"
 	"fmt"
 	"log"
+	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -11,6 +14,7 @@ import (
 
 	// constクラス
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 	cnst "github.com/kemper0530/go-handson/common"
 
 	// エンティティ(データベースのテーブルの行に対応)
@@ -47,6 +51,7 @@ func FindLoginID(username string, password string) entity.Rslt {
 			Rslt.Responce = cnst.JsonStatusOK
 			Rslt.Result = cnst.ONE
 			Rslt.Name = login_info[0].Name
+			Rslt.Id = login_info[0].Id
 		} else {
 			fmt.Println("Login error: ", errLogin)
 			// ログイン失敗
@@ -177,6 +182,7 @@ func SetMailSendRslt() entity.Mail_send_rslt {
 func SetMailSendInf2C(to_email string, name string, text string, from_email string, personal_name string, msgid string, id int) entity.Mail_send_inf {
 
 	mst_ssmlknr := []entity.Mst_ssmlknr{}
+	tmpuserinfo := []entity.Tmpuserinfo{}
 
 	db := open()
 
@@ -185,8 +191,20 @@ func SetMailSendInf2C(to_email string, name string, text string, from_email stri
 	subject := mst_ssmlknr[0].Subject
 	body := mst_ssmlknr[0].Body
 
-	// 文字列の置き換え　$1　→　登録名
+	// tokenの取得
+	db.Where("email = ?", to_email).First(&tmpuserinfo)
+  token := tmpuserinfo[0].Token
+	// URLの生成
+	err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	path := os.Getenv("SIGN_UP_PATH")
+	query := path + "?token=" + token
+
+	// 文字列の置き換え　$1　→　登録名、$2 -> URL
 	_body := strings.Replace(body, "$1", name, -1)
+	_body = strings.Replace(_body, "$2", query, -1)
 
 	// insert メール送信情報(顧客用)
 	mail_send_infIns := entity.Mail_send_inf{
@@ -379,15 +397,15 @@ func FetchProfileInfo() []entity.Profile {
 	return profile
 }
 
-// アカウント情報を登録する
-func RegistLoginID(username string, password string, name string) entity.Rslt {
+// 仮アカウント情報を登録する
+func RegistLoginID(email string, password string, name string) entity.Rslt {
 	login_info := []entity.Login_info{}
 	Rslt := entity.Rslt{}
 
 	db := open()
 
 	// 登録情報の確認
-	db.First(&login_info, "username=?", username)
+	db.First(&login_info, "username=?", email)
 
 	if len(login_info) == cnst.ONE {
 		Rslt.Responce = cnst.JsonStatusOK
@@ -404,15 +422,24 @@ func RegistLoginID(username string, password string, name string) entity.Rslt {
 		return Rslt
 	}
 
+	// Tokenの生成
+	token := RandString6(24)
+
+	// 期限日の設定
+	expired := time.Now()
+	expired = expired.Add(time.Duration(24) * time.Hour)
+
 	// insert ログイン情報
-	var login_infIns = entity.Login_info{
-		Username: username,
+	var tmpuserinfoIns = entity.Tmpuserinfo{
+		Email:    email,
 		Password: string(hashPassword),
 		Name:     name,
+		Token:    token,
+		Expired:  expired,
 	}
 
 	// insert
-	db.Create(&login_infIns)
+	db.Create(&tmpuserinfoIns)
 
 	Rslt.Responce = cnst.JsonStatusOK
 	Rslt.Result = cnst.ONE
@@ -420,4 +447,76 @@ func RegistLoginID(username string, password string, name string) entity.Rslt {
 	close(db)
 
 	return Rslt
+}
+
+// work全件取得する
+func FetchMailAdrInfo(id int) entity.Rslt {
+	login_info := []entity.Login_info{}
+	Rslt := entity.Rslt{}
+
+	db := open()
+	db.First(&login_info, "id=?", id)
+
+	Rslt.Id = login_info[0].Id
+	Rslt.Email = login_info[0].Username
+	Rslt.Name = login_info[0].Name
+	Rslt.Responce = cnst.JsonStatusOK
+	Rslt.Result = cnst.ONE
+
+	close(db)
+
+	return Rslt
+}
+
+func RandString6(n int) string {
+	var randSrc = rand.NewSource(time.Now().UnixNano())
+	b := make([]byte, n)
+	cache, remain := randSrc.Int63(), cnst.Rs6LetterIdxMax
+	for i := n - 1; i >= 0; {
+		if remain == 0 {
+			cache, remain = randSrc.Int63(), cnst.Rs6LetterIdxMax
+		}
+		idx := int(cache & cnst.Rs6LetterIdxMask)
+		if idx < len(cnst.Rs6Letters) {
+			b[i] = cnst.Rs6Letters[idx]
+			i--
+		}
+		cache >>= cnst.Rs6LetterIdxBits
+		remain--
+	}
+	return string(b)
+}
+
+// 押下したURLを検証する
+func FetchSignUpAccountMail(token string) int {
+	tmpuserinfo := []entity.Tmpuserinfo{}
+
+	db := open()
+	db.First(&tmpuserinfo, "token=?", token)
+
+	// 値の取得ができなかった場合
+  if len(tmpuserinfo) == cnst.ZERO {
+		return cnst.ZERO
+	}
+
+	email := tmpuserinfo[0].Email
+	password := tmpuserinfo[0].Password
+	name := tmpuserinfo[0].Name
+
+	// insert ログイン情報
+	var login_infoIns = entity.Login_info{
+		Username:    email,
+		Password:    password,
+		Name:        name,
+	}
+
+	// ログイン情報にInsert
+	db.Create(&login_infoIns)
+
+	// 仮ログインテーブルから削除
+	db.Where("email = ?", email).Delete(entity.Tmpuserinfo{})
+
+	close(db)
+
+	return cnst.ONE
 }

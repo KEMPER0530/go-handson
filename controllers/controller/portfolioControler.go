@@ -201,3 +201,39 @@ func FetchRegistAccountMail(c *gin.Context) {
 		c.JSON(http.StatusOK, resultProduct)
 	}
 }
+
+// FetchMailAdrInfo は 指定したIDのメールアドレスと氏名を取得する
+func FetchMailAdrInfo(c *gin.Context) {
+	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	if resultStatus == cnst.JsonStatusNG {
+		c.JSON(http.StatusBadRequest, errMsg)
+	} else {
+		id := c.PostForm("id")
+		if len(id) == cnst.ZERO {
+			log.Panic("Error nothing URL parameter!!")
+		}
+
+		id_int, _ := strconv.Atoi(id)
+		resultProduct := db.FetchMailAdrInfo(id_int)
+
+		// URLへのアクセスに対してJSONを返す
+		c.JSON(http.StatusOK, resultProduct)
+	}
+}
+
+// FetchSignUpAccountMail は メールリンク認証を実装する。
+func FetchSignUpAccountMail(c *gin.Context) {
+	token := c.Query("token")
+
+	if len(token) == cnst.ZERO {
+		c.HTML(http.StatusOK, "error.tmpl", gin.H{})
+	} else {
+		authFlg := db.FetchSignUpAccountMail(token)
+
+		if authFlg == cnst.ONE {
+			c.HTML(http.StatusOK, "success.tmpl", gin.H{})
+		} else {
+			c.HTML(http.StatusOK, "error.tmpl", gin.H{})
+		}
+	}
+}

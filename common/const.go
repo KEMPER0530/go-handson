@@ -28,4 +28,9 @@ const (
 	FOUR int = 4
 	// QueueID
 	QUEUEID string = "Amazon SES"
+	// Token用の文字列
+	Rs6Letters       = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+	Rs6LetterIdxBits = 6
+	Rs6LetterIdxMask = 1<<Rs6LetterIdxBits - 1
+	Rs6LetterIdxMax  = 63 / Rs6LetterIdxBits
 )
