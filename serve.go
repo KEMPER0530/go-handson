@@ -94,7 +94,7 @@ func serve(port string) {
 	router.POST("/api/fetchMailAdrInfo", controller.FetchMailAdrInfo)
 
 	// 仮パスワードのリンクを押下された場合の挙動
-	router.Static("/static/css", "./static/css")
+	//router.Static("/static/css", "./static/css")
 	router.LoadHTMLGlob("templates/*.tmpl")
 	router.GET("/api/fetchSignUpAccountMail", controller.FetchSignUpAccountMail)
 
