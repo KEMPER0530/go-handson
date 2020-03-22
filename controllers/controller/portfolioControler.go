@@ -22,7 +22,11 @@ import (
 // メールバッチ処理
 func FetchMailSendSelect() {
 	resultProduct := db.FetchMailSendSelect()
-	fmt.Println("Run AmazonMail SES! %s", resultProduct)
+	if resultProduct.Result == cnst.ONE {
+		fmt.Println("Run AmazonMail SES!")
+	} else {
+		fmt.Println("Not Run AmazonMail SES!")
+	}
 }
 
 // メールバッチステータスを返却する

@@ -193,21 +193,21 @@ func SetMailSendInf2C(to_email string, name string, text string, from_email stri
 
 	// 仮登録の場合
 	if id == cnst.TWO {
-	  // tokenの取得
-	  db.Where("email = ?", to_email).First(&tmpuserinfo)
+		// tokenの取得
+		db.Where("email = ?", to_email).First(&tmpuserinfo)
 		token := tmpuserinfo[0].Token
-	  // URLの生成
-	  err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
-	  if err != nil {
-		  log.Fatal("Error loading .env file")
-	  }
-	  path := os.Getenv("SIGN_UP_PATH")
+		// URLの生成
+		err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+		path := os.Getenv("SIGN_UP_PATH")
 		query := path + "?token=" + token
-		
+
 		// 文字列の置き換え　$1　→　登録名、$2 -> URL
-	  body = strings.Replace(body, "$1", name, -1)
-	  body = strings.Replace(body, "$2", query, -1)
-	}else {
+		body = strings.Replace(body, "$1", name, -1)
+		body = strings.Replace(body, "$2", query, -1)
+	} else {
 		body = strings.Replace(body, "$1", name, -1)
 	}
 
@@ -428,19 +428,20 @@ func RegistLoginID(email string, password string, name string) entity.Rslt {
 	}
 
 	// Tokenの生成
-	token := RandString6(24)
+	token := RandString6(36)
 
 	// 期限日の設定
 	expired := time.Now()
 	expired = expired.Add(time.Duration(24) * time.Hour)
 
-	// insert ログイン情報
+	// insert Tmpuser情報
 	var tmpuserinfoIns = entity.Tmpuserinfo{
-		Email:    email,
-		Password: string(hashPassword),
-		Name:     name,
-		Token:    token,
-		Expired:  expired,
+		Email:      email,
+		Password:   string(hashPassword),
+		Name:       name,
+		Token:      token,
+		Expired:    expired,
+		Updated_at: time.Now(),
 	}
 
 	// insert
@@ -500,7 +501,14 @@ func FetchSignUpAccountMail(token string) int {
 	db.First(&tmpuserinfo, "token=?", token)
 
 	// 値の取得ができなかった場合
-  if len(tmpuserinfo) == cnst.ZERO {
+	if len(tmpuserinfo) == cnst.ZERO {
+		return cnst.ZERO
+	}
+
+	tn := time.Now()
+
+	// 期限日を超過している場合
+	if !tmpuserinfo[0].Expired.After(tn) {
 		return cnst.ZERO
 	}
 
@@ -510,9 +518,10 @@ func FetchSignUpAccountMail(token string) int {
 
 	// insert ログイン情報
 	var login_infoIns = entity.Login_info{
-		Username:    email,
-		Password:    password,
-		Name:        name,
+		Username:   email,
+		Password:   password,
+		Name:       name,
+		Updated_at: tn,
 	}
 
 	// ログイン情報にInsert
