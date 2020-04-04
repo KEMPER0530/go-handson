@@ -12,7 +12,6 @@ import (
 	"github.com/joho/godotenv"
 
 	// JobRunner
-	"github.com/bamzi/jobrunner"
 
 	// MySQL用ドライバ
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -33,20 +32,7 @@ func main() {
 	serve(":" + PORT)
 }
 
-// dummy ...
-type dummy struct {
-}
-
-// Run ...
-func (e dummy) Run() {
-	// controller.FetchMailSendSelect()
-}
-
 func serve(port string) {
-
-	// バッチ起動スタート
-	jobrunner.Start()
-	jobrunner.Schedule(os.Getenv("SCHEDULE"), dummy{})
 
 	// デフォルトのミドルウェアでginのルーターを作成
 	// Logger と アプリケーションクラッシュをキャッチするRecoveryミドルウェア を保有しています
@@ -101,6 +87,9 @@ func serve(port string) {
 	if err := router.Run(port); err != nil {
 		log.Fatal("Server Run Failed.: ", err)
 	}
+
+	// バウンスメールを登録する(Lambdaより実行される)
+	//router.POST("/api/fetchMailBounceReg", controller.FetchMailBounceReg)
 }
 
 // Cross-Origin Resource Sharing (CORS) is a mechanism

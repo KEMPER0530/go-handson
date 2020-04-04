@@ -241,3 +241,25 @@ func FetchSignUpAccountMail(c *gin.Context) {
 		}
 	}
 }
+
+// FetchMailBounceReg は sisimaiで解析したバウンスメールの登録を実施する
+// 	func FetchMailBounceReg(c *gin.Context) {
+
+// 		body := c.PostForm("body")
+
+// 		if len(body) == cnst.ZERO {
+// 			log.Panic("Error nothing Json Body!!")
+// 		}
+
+// 		bounce_mail_detail := []entity.Bounce_mail_detail{}
+// 		err := c.BindJSON(&bounce_mail_detail)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+
+// 		resultProduct := db.FetchMailBounceReg(bounce_mail_detail)
+
+// 		// URLへのアクセスに対してJSONを返す
+// 		c.JSON(http.StatusOK, resultProduct)
+// 	}
+// }
