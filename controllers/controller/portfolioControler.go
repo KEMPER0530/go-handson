@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 
 	// JobRunner
-	"github.com/bamzi/jobrunner"
 
 	// authクラス
 	authcnfg "github.com/kemper0530/go-handson/config"
@@ -29,9 +28,10 @@ func FetchMailSendSelect() {
 	}
 }
 
-// メールバッチステータスを返却する
-func FetchMailBatchStatus(c *gin.Context) {
-	c.JSON(http.StatusOK, jobrunner.StatusJson())
+// Goアプリのステータスを返却する
+func ActuaterHealth(c *gin.Context) {
+	resultProducts := db.ActuaterHealth()
+	c.JSON(http.StatusOK, resultProducts)
 }
 
 // FetchAllMembers は メンバー情報を取得する

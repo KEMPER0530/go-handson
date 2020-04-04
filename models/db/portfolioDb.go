@@ -22,6 +22,25 @@ import (
 	entity "github.com/kemper0530/go-handson/models/entity"
 )
 
+// Actuator
+func ActuaterHealth() entity.ActuatorRslt {
+	testmember := []entity.Testmember{}
+	actuatorRslt := entity.ActuatorRslt{}
+
+	db := open()
+	db.Order("id asc").Find(&testmember)
+	actuatorRslt.Db_Status = "UP"
+	close(db)
+
+	actuatorRslt.App_Status = "UP"
+	// 日本時間へ変換
+	jst, _ := time.LoadLocation("Asia/Tokyo")
+	actuatorRslt.Time = time.Now().In(jst)
+	actuatorRslt.Host, _ = os.Hostname()
+
+	return actuatorRslt
+}
+
 // FindAllMembersはメンバー全件取得する
 func FetchAllMembers() []entity.Testmember {
 	testmember := []entity.Testmember{}
