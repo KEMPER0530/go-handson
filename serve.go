@@ -64,8 +64,8 @@ func serve(port string) {
 	// お問合せフォーム内容を登録し、メールを送信するかつ結果のJSONを返す
 	router.POST("/api/fetchSendMailRegist", controller.FetchSendMailRegist)
 
-	// メールバッチのステータスを返却する
-	router.GET("/api/fetchMailBatchStatus", controller.FetchMailBatchStatus)
+	// Goアプリのステータスを返却する
+	router.GET("/api/actuaterHealth", controller.ActuaterHealth)
 
 	// profile情報のJSONを返す
 	router.GET("/api/fetchProfileInfo", controller.FetchProfileInfo)
