@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ses"
@@ -63,14 +64,14 @@ func SendEmailPrepare(db *gorm.DB) bool {
 	body := mail_send_inf[0].Body
 
 	// メールを送信する
-	err := sendSESEmail(from, to, subject, body)
+	messageIdSES, err := sendSESEmail(from, to, subject, body)
 	if err != nil {
-		UpdateMailSendRslt(msgid, db, cnst.FOUR)
+		UpdateMailSendRslt(msgid, db, cnst.FOUR, messageIdSES)
 		return false
 	}
 
 	// メール送信結果情報のステータスを送信済に変更する
-	err = UpdateMailSendRslt(msgid, db, cnst.TWO)
+	err = UpdateMailSendRslt(msgid, db, cnst.TWO, messageIdSES)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -86,7 +87,7 @@ func SendEmailPrepare(db *gorm.DB) bool {
 	return true
 }
 
-func sendSESEmail(from string, to string, title string, body string) error {
+func sendSESEmail(from string, to string, title string, body string) (*string, error) {
 	// 環境変数ファイルの読込
 	AWS_REGION := awsEnvload("AWS_REGION")
 	AWS_ACCESS_KEY_ID := awsEnvload("AWS_ACCESS_KEY_ID")
@@ -121,21 +122,39 @@ func sendSESEmail(from string, to string, title string, body string) error {
 		Source: aws.String(from),
 	}
 
-	// メール送信を実施する
-	_, err := svc.SendEmail(input)
+	// Attempt to send the email.
+	result, err := svc.SendEmail(input)
 	if err != nil {
-		log.Println(err)
-		return errors.New(err.Error())
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case ses.ErrCodeMessageRejected:
+				log.Println(ses.ErrCodeMessageRejected, aerr.Error())
+			case ses.ErrCodeMailFromDomainNotVerifiedException:
+				log.Println(ses.ErrCodeMailFromDomainNotVerifiedException, aerr.Error())
+			case ses.ErrCodeConfigurationSetDoesNotExistException:
+				log.Println(ses.ErrCodeConfigurationSetDoesNotExistException, aerr.Error())
+			default:
+				log.Println(aerr.Error())
+			}
+		} else {
+			// Print the error, cast err to awserr.Error to get the Code and
+			// Message from an error.
+			log.Println(err.Error())
+		}
+		return result.MessageId, errors.New(err.Error())
 	}
 
-	return nil
+	log.Println("Email Sent to address: " + to)
+	log.Println(result)
+
+	return result.MessageId, nil
 }
 
-func UpdateMailSendRslt(msgid string, db *gorm.DB, status int) error {
+func UpdateMailSendRslt(msgid string, db *gorm.DB, status int, msgidSES *string) error {
 	mail_send_rslt := []entity.Mail_send_rslt{}
 
 	// 送信済に変更する
-	rslt := db.Model(&mail_send_rslt).Where("msg_id = ?", msgid).Updates(map[string]interface{}{"status": status, "queue_id": cnst.QUEUEID})
+	rslt := db.Model(&mail_send_rslt).Where("msg_id = ?", msgid).Updates(map[string]interface{}{"status": status, "queue_id": cnst.QUEUEID, "msg_id_ses": msgidSES})
 	if rslt == nil {
 		return errors.New("ステータスの更新に失敗しました")
 	}

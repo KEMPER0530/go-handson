@@ -13,6 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	// constクラス
+
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	cnst "github.com/kemper0530/go-handson/common"
@@ -534,3 +535,10 @@ func FetchSignUpAccountMail(token string) int {
 
 	return cnst.ONE
 }
+
+// バウンスメールの登録を実施する
+// func FetchMailAdrInfo() entity.Rslt {
+// 	Rslt := entity.Rslt{}
+
+// 	return Rslt
+// }
