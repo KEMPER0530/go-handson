@@ -16,4 +16,4 @@ jobs:
           command: go get -t -v -d ./...
       - run:
           name: Go Auto test
-          command: GO_ENV=development go test -cover -v
+          command: GO_ENV=production go test -cover -v
