@@ -3,9 +3,9 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.13.4
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: ~/go/src/test
+    machine: true
     steps:
-      - run: apk update && apk upgrade && apk add vim && apk add git && apk add build-base
       - run: echo 'export PATH=/go/bin/:${PATH}' >> $BASH_ENV
       - run:
           name: base64 decode env file
