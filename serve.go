@@ -26,13 +26,17 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	// ポートの取得
 	PORT := os.Getenv("PORT")
 
 	// サーバーを起動する
-	serve(":" + PORT)
+	router := serve()
+	if err := router.Run(":" + PORT); err != nil {
+		log.Fatal("Server Run Failed.: ", err)
+	}
 }
 
-func serve(port string) {
+func serve() *gin.Engine {
 
 	// デフォルトのミドルウェアでginのルーターを作成
 	// Logger と アプリケーションクラッシュをキャッチするRecoveryミドルウェア を保有しています
@@ -84,9 +88,7 @@ func serve(port string) {
 	router.LoadHTMLGlob("templates/*.tmpl")
 	router.GET("/api/fetchSignUpAccountMail", controller.FetchSignUpAccountMail)
 
-	if err := router.Run(port); err != nil {
-		log.Fatal("Server Run Failed.: ", err)
-	}
+	return router
 
 	// バウンスメールを登録する(Lambdaより実行される)
 	//router.POST("/api/fetchMailBounceReg", controller.FetchMailBounceReg)
