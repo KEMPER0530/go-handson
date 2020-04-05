@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.13.4
+    working_directory: ~/go/src/github.com/test/example
+    steps:
+      - run: echo 'export PATH=/go/bin/:${PATH}' >> $BASH_ENV
+      - run:
+          name: base64 decode env file
+          # ファイルに改行が含まれているので`-i`オプションを付ける
+          command: echo $ENV_FILE | base64 -di > production.env
+      - checkout
+      - run:
+          name: go get ....
+          command: go get -t -v -d ./...
+      - run:
+          name: Go Auto test
+          command: GO_ENV=development go test -cover -v
