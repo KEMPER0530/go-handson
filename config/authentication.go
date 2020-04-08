@@ -6,8 +6,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/joho/godotenv"
-
 	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
 	cnst "github.com/kemper0530/go-handson/common"
@@ -50,12 +48,7 @@ func AuthFirebase(c *gin.Context) (result int, errMsg string) {
 
 // firebase json path
 func GetFireBasePath() string {
-	// 環境変数ファイルの読込
-	err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// 環境変数の読込
 	firebasejsonpath := os.Getenv("FIREBASE_PATH")
-
 	return firebasejsonpath
 }

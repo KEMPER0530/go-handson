@@ -15,7 +15,6 @@ import (
 	// constクラス
 
 	"github.com/google/uuid"
-	"github.com/joho/godotenv"
 	cnst "github.com/kemper0530/go-handson/common"
 
 	// エンティティ(データベースのテーブルの行に対応)
@@ -217,10 +216,6 @@ func SetMailSendInf2C(to_email string, name string, text string, from_email stri
 		db.Where("email = ?", to_email).First(&tmpuserinfo)
 		token := tmpuserinfo[0].Token
 		// URLの生成
-		err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
-		if err != nil {
-			log.Fatal("Error loading .env file")
-		}
 		path := os.Getenv("SIGN_UP_PATH")
 		query := path + "?token=" + token
 

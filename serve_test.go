@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -11,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 
 	// MySQL用ドライバ
@@ -23,10 +21,10 @@ import (
 func TestMain(m *testing.M) {
 	fmt.Println("before test serve_test.go")
 	// 環境変数ファイルの読込
-	err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 	code := m.Run()
 	fmt.Println("after test serve_test.go")
 	os.Exit(code)

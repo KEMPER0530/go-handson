@@ -4,13 +4,11 @@ import (
 	// フォーマットI/O
 
 	"fmt"
-	"log"
 	"os"
 
 	// Go言語のORM
 
 	"github.com/jinzhu/gorm"
-	"github.com/joho/godotenv"
 )
 
 // DB接続する
@@ -50,12 +48,7 @@ func close(db *gorm.DB) {
 }
 
 func awsEnvload(_num string) string {
-	err := godotenv.Load(fmt.Sprintf("config/production.env"))
-	if err != nil {
-		log.Panic("Error loading .env file")
-	}
-
+	// 環境変数の読込
 	envString := os.Getenv(_num)
-
 	return envString
 }
