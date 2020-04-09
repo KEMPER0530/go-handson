@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	common "github.com/kemper0530/go-handson/common"
 	config "github.com/kemper0530/go-handson/config"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +24,11 @@ import (
 
 func TestMain(m *testing.M) {
 	fmt.Println("before test serve_test.go")
-
+	// 環境変数ファイルの読込
+	err := godotenv.Load(fmt.Sprintf("%s.env", os.Getenv("GO_ENV")))
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	// firebaseSDKの読込
 	auth, err := config.SetUpFirebase()
 	if err != nil {
@@ -31,7 +36,6 @@ func TestMain(m *testing.M) {
 	}
 	// commonに格納する
 	common.Auth = auth
-
 	code := m.Run()
 	fmt.Println("after test serve_test.go")
 	os.Exit(code)
