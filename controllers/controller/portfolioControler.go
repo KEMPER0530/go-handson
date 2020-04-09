@@ -36,7 +36,7 @@ func ActuaterHealth(c *gin.Context) {
 
 // FetchAllMembers は メンバー情報を取得する
 func FetchAllMembers(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -48,7 +48,7 @@ func FetchAllMembers(c *gin.Context) {
 
 // work情報を取得する
 func FetchAllWorker(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -60,7 +60,7 @@ func FetchAllWorker(c *gin.Context) {
 
 // FetchLoginInfo は 指定したIDのパスワードを取得する
 func FetchLoginInfo(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -80,7 +80,7 @@ func FetchLoginInfo(c *gin.Context) {
 
 // クレジットカード情報を登録する
 func FetchCreditInfoRegist(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -106,7 +106,7 @@ func FetchCreditInfoRegist(c *gin.Context) {
 
 // お問合せ内容を登録する
 func FetchSendMailRegist(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -145,7 +145,7 @@ func FetchSendMailRegist(c *gin.Context) {
 
 // profile情報を取得する
 func FetchProfileInfo(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -158,7 +158,7 @@ func FetchProfileInfo(c *gin.Context) {
 
 // FetchRegistAcount は アカウントの登録を実施する
 func FetchRegistAccount(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -179,7 +179,7 @@ func FetchRegistAccount(c *gin.Context) {
 
 // FetchRegistAcountMail は 送信先へのメール情報を登録する
 func FetchRegistAccountMail(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
@@ -208,7 +208,7 @@ func FetchRegistAccountMail(c *gin.Context) {
 
 // FetchMailAdrInfo は 指定したIDのメールアドレスと氏名を取得する
 func FetchMailAdrInfo(c *gin.Context) {
-	resultStatus, errMsg := authcnfg.AuthFirebase(c)
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
 	if resultStatus == cnst.JsonStatusNG {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {

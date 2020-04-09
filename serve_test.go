@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -10,6 +11,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	common "github.com/kemper0530/go-handson/common"
+	config "github.com/kemper0530/go-handson/config"
 	"github.com/stretchr/testify/assert"
 
 	// MySQL用ドライバ
@@ -20,11 +23,15 @@ import (
 
 func TestMain(m *testing.M) {
 	fmt.Println("before test serve_test.go")
-	// 環境変数ファイルの読込
-	// err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file")
-	// }
+
+	// firebaseSDKの読込
+	auth, err := config.SetUpFirebase()
+	if err != nil {
+		log.Fatal("Error loading firebase-auth file")
+	}
+	// commonに格納する
+	common.Auth = auth
+
 	code := m.Run()
 	fmt.Println("after test serve_test.go")
 	os.Exit(code)
@@ -188,4 +195,11 @@ func mockHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "mock call successful",
 	})
+}
+
+// firebase json path
+func GetFireBasePath() string {
+	// 環境変数の読込
+	firebasejsonpath := os.Getenv("FIREBASE_PATH")
+	return firebasejsonpath
 }

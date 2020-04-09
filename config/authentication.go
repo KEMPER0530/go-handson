@@ -7,28 +7,28 @@ import (
 	"strings"
 
 	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"github.com/gin-gonic/gin"
 	cnst "github.com/kemper0530/go-handson/common"
 	"golang.org/x/net/context"
 	"google.golang.org/api/option"
 )
 
-// FireBase認証確認
-func AuthFirebase(c *gin.Context) (result int, errMsg string) {
+// FireBaseの設定ファイル読込
+func SetUpFirebase() (auth *auth.Client, err error) {
 	// FirebaseのSDKを使用するためのkeyを読み込み
-	u := ""
 	opt := option.WithCredentialsFile(GetFireBasePath())
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
-		u = fmt.Sprintf("error: %v", err)
-		os.Exit(1)
-		return cnst.JsonStatusNG, u
+		return nil, err
 	}
-	auth, err := app.Auth(context.Background())
-	if err != nil {
-		u = fmt.Sprintf("error: %v", err)
-		return cnst.JsonStatusNG, u
-	}
+	auth, errAuth := app.Auth(context.Background())
+
+	return auth, errAuth
+}
+
+// JWT検証
+func AuthFirebase(c *gin.Context, auth *auth.Client) (result int, errMsg string) {
 
 	// クライアントから送られてきた JWT 取得
 	authHeader := c.GetHeader("Authorization")
@@ -37,11 +37,11 @@ func AuthFirebase(c *gin.Context) (result int, errMsg string) {
 	// JWT の検証
 	token, err := auth.VerifyIDToken(context.Background(), idToken)
 	if err != nil {
-		u = fmt.Sprintf("error verifying ID token: %v\n", err)
+		u := fmt.Sprintf("error verifying ID token: %v\n", err)
 		log.Printf("error verifying ID token: %v\n", err)
 		return cnst.JsonStatusNG, u
 	}
-	u = fmt.Sprintf("Verified ID token: %v\n", token)
+	u := fmt.Sprintf("Verified ID token: %v\n", token)
 
 	return cnst.JsonStatusOK, u
 }

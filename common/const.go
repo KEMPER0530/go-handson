@@ -1,5 +1,7 @@
 package common
 
+import "firebase.google.com/go/auth"
+
 const (
 	// 返却時の正常レスポンス
 	HttpStatusOK int = 200
@@ -33,4 +35,8 @@ const (
 	Rs6LetterIdxBits = 6
 	Rs6LetterIdxMask = 1<<Rs6LetterIdxBits - 1
 	Rs6LetterIdxMax  = 63 / Rs6LetterIdxBits
+)
+
+var (
+	Auth *auth.Client
 )
