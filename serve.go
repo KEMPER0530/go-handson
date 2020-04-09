@@ -11,8 +11,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
-	// JobRunner
-
+	// config
+	config "github.com/kemper0530/go-handson/config"
+	// common
+	common "github.com/kemper0530/go-handson/common"
 	// MySQL用ドライバ
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
@@ -26,6 +28,14 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	// firebaseSDKの読込
+	auth, err := config.SetUpFirebase()
+	if err != nil {
+		log.Fatal("Error loading firebase-auth file")
+	}
+	// commonに格納する
+	common.Auth = auth
+
 	// ポートの取得
 	PORT := os.Getenv("PORT")
 
