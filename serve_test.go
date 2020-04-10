@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,11 +12,11 @@ import (
 	"strings"
 	"testing"
 
+	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	common "github.com/kemper0530/go-handson/common"
-	config "github.com/kemper0530/go-handson/config"
 	"github.com/stretchr/testify/assert"
+	"google.golang.org/api/option"
 
 	// MySQL用ドライバ
 	_ "github.com/go-sql-driver/mysql"
@@ -24,18 +26,8 @@ import (
 
 func TestMain(m *testing.M) {
 	fmt.Println("before test serve_test.go")
-	// 環境変数ファイルの読込
-	err := godotenv.Load(fmt.Sprintf("%s.env", os.Getenv("GO_ENV")))
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	// firebaseSDKの読込
-	auth, err := config.SetUpFirebase()
-	if err != nil {
-		log.Fatal("Error loading firebase-auth file")
-	}
-	// commonに格納する
-	common.Auth = auth
+	// 設定ファイルの読込
+	SetConfig()
 	code := m.Run()
 	fmt.Println("after test serve_test.go")
 	os.Exit(code)
@@ -202,8 +194,28 @@ func mockHandler(c *gin.Context) {
 }
 
 // firebase json path
-func GetFireBasePath() string {
-	// 環境変数の読込
-	firebasejsonpath := os.Getenv("FIREBASE_PATH")
-	return firebasejsonpath
+func SetConfig() {
+	// FireBaseの設定読込
+	sEnc := os.Getenv("FIREBASE_TOKEN")
+	sDec, _ := base64.StdEncoding.DecodeString(sEnc)
+	opt := option.WithCredentialsJSON(sDec)
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, nil, opt)
+	if err != nil {
+		log.Fatalf("error firebase NewApp : %v\n", err)
+	}
+	auth, errAuth := app.Auth(ctx)
+	if err != nil {
+		log.Fatalf("error firebase Auth : %v\n", errAuth)
+	}
+	// commonに格納する
+	common.Auth = auth
+
+	// カスタムトークンの生成
+	jwt, e := auth.CustomToken(ctx, os.Getenv("UID"))
+	if e != nil {
+		log.Fatalf("error minting custom token: %v\n", e)
+	}
+	os.Setenv("TEST_JWT", jwt)
+	log.Printf("Get custom token: %v\n", os.Getenv("TEST_JWT"))
 }

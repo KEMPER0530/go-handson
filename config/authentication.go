@@ -35,14 +35,23 @@ func AuthFirebase(c *gin.Context, auth *auth.Client) (result int, errMsg string)
 	idToken := strings.Replace(authHeader, "Bearer ", "", 1)
 
 	// JWT の検証
-	token, err := auth.VerifyIDToken(context.Background(), idToken)
-	if err != nil {
-		u := fmt.Sprintf("error verifying ID token: %v\n", err)
-		log.Printf("error verifying ID token: %v\n", err)
-		return cnst.JsonStatusNG, u
+	u := ""
+	if os.Getenv("MODE") == "TEST" {
+		if os.Getenv("TEST_JWT") == idToken {
+			u = fmt.Sprintf("[TEST] Success JWT Verify :%v", idToken)
+			log.Printf("[TEST] success JWT Verify :%v", idToken)
+		} else {
+			u = fmt.Sprintf("[TEST] error JWT Verify :%v", idToken)
+			log.Printf("[TEST] error JWT Verify :%v", idToken)
+		}
+	} else {
+		_, err := auth.VerifyIDToken(context.Background(), idToken)
+		if err != nil {
+			u = fmt.Sprintf("error verifying ID token: %v\n", err)
+			log.Printf("error verifying ID token: %v\n", err)
+			return cnst.JsonStatusNG, u
+		}
 	}
-	u := fmt.Sprintf("Verified ID token: %v\n", token)
-
 	return cnst.JsonStatusOK, u
 }
 
