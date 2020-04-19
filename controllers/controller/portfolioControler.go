@@ -1,14 +1,15 @@
 package controller
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-
-	// JobRunner
+	"github.com/kemper0530/go-handson/models/entity"
 
 	// authクラス
 	authcnfg "github.com/kemper0530/go-handson/config"
@@ -16,6 +17,8 @@ import (
 	cnst "github.com/kemper0530/go-handson/common"
 	// DBアクセス用モジュール
 	db "github.com/kemper0530/go-handson/models/db"
+	// httpアクセス用モジュール
+	rest "github.com/kemper0530/go-handson/models/rest"
 )
 
 // メールバッチ処理
@@ -242,24 +245,36 @@ func FetchSignUpAccountMail(c *gin.Context) {
 	}
 }
 
-// FetchMailBounceReg は sisimaiで解析したバウンスメールの登録を実施する
-// 	func FetchMailBounceReg(c *gin.Context) {
+// NEWSAPIの記事を取得し、フロントへ返却する
+func FetchNewsInfo(c *gin.Context) {
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
+	if resultStatus == cnst.JsonStatusNG {
+		c.JSON(http.StatusBadRequest, errMsg)
+	} else {
+		category := c.PostForm("category")
+		if len(category) == cnst.ZERO {
+			log.Panic("Error nothing URL parameter!!")
+		}
 
-// 		body := c.PostForm("body")
+		url := os.Getenv("NEWS_URL")
+		apikey := os.Getenv("NEWS_APIKEY")
 
-// 		if len(body) == cnst.ZERO {
-// 			log.Panic("Error nothing Json Body!!")
-// 		}
+		fmt.Println("【URL】:" + url + "&apikey=" + apikey + "&category=" + category)
 
-// 		bounce_mail_detail := []entity.Bounce_mail_detail{}
-// 		err := c.BindJSON(&bounce_mail_detail)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
+		// httpリクエストを実施する
+		status, resp := rest.FetchRequest(url+"&apikey="+apikey+"&category="+category, "GET")
+		// 200以外の場合は即時返却する
+		if status != 200 {
+			c.JSON(status, nil)
+		}
+		// 返却する構造体を定義
+		var na entity.NewsAPI
 
-// 		resultProduct := db.FetchMailBounceReg(bounce_mail_detail)
-
-// 		// URLへのアクセスに対してJSONを返す
-// 		c.JSON(http.StatusOK, resultProduct)
-// 	}
-// }
+		// Jsonデコード
+		if err := json.Unmarshal(resp, &na); err != nil {
+			log.Fatal(err)
+		}
+		// URLへのアクセスに対してJSONを返す
+		c.JSON(status, na)
+	}
+}
