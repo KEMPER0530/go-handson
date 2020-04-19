@@ -98,10 +98,10 @@ func serve() *gin.Engine {
 	router.LoadHTMLGlob("templates/*.tmpl")
 	router.GET("/api/fetchSignUpAccountMail", controller.FetchSignUpAccountMail)
 
-	return router
+	// NEWSAPIの記事を取得し、フロントへ返却する
+	router.POST("/api/fetchNewsInfo", controller.FetchNewsInfo)
 
-	// バウンスメールを登録する(Lambdaより実行される)
-	//router.POST("/api/fetchMailBounceReg", controller.FetchMailBounceReg)
+	return router
 }
 
 // Cross-Origin Resource Sharing (CORS) is a mechanism

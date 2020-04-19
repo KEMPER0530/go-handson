@@ -2,6 +2,7 @@ package db
 
 import (
 	//b64 "encoding/base64"
+
 	"fmt"
 	"log"
 	"math/rand"
@@ -549,10 +550,3 @@ func FetchSignUpAccountMail(token string) int {
 
 	return cnst.ONE
 }
-
-// バウンスメールの登録を実施する
-// func FetchMailAdrInfo() entity.Rslt {
-// 	Rslt := entity.Rslt{}
-
-// 	return Rslt
-// }
