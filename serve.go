@@ -101,6 +101,9 @@ func serve() *gin.Engine {
 	// NEWSAPIの記事を取得し、フロントへ返却する
 	router.POST("/api/fetchNewsInfo", controller.FetchNewsInfo)
 
+	// アクセスログを登録する
+	router.POST("/api/fetchRegistAccessLog", controller.FetchRegistAccessLog)
+
 	return router
 }
 

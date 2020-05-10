@@ -187,6 +187,33 @@ func TestFetchLoginInfo(t *testing.T) {
 	t.Log("END TestFetchLoginInfo")
 }
 
+func TestFetchNewsInfo(t *testing.T) {
+	t.Log("START TestFetchNewsInfo")
+
+	gin.SetMode(gin.TestMode)
+	router := serve()
+	router.Use(gin.Logger())
+
+	// パラメータを組み立て
+	values := url.Values{}             // url.Valuesオブジェクト生成
+	values.Set("category", "business") // key-valueを追加
+
+	fmt.Println(strings.NewReader(values.Encode()))
+	req, _ := http.NewRequest("POST", "/api/fetchNewsInfo", strings.NewReader(values.Encode()))
+	rec := httptest.NewRecorder()
+
+	// JWTのセット
+	str := os.Getenv("TEST_JWT")
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", str))
+	// Content-Type 設定
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	router.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+
+	t.Log("END TestFetchNewsInfo")
+}
+
 func mockHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "mock call successful",
