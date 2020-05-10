@@ -278,3 +278,16 @@ func FetchNewsInfo(c *gin.Context) {
 		c.JSON(status, na)
 	}
 }
+
+// FetchRegistAccessLog は アクセスログの登録を実施する
+func FetchRegistAccessLog(c *gin.Context) {
+	resultStatus, errMsg := authcnfg.AuthFirebase(c, cnst.Auth)
+	if resultStatus == cnst.JsonStatusNG {
+		c.JSON(http.StatusBadRequest, errMsg)
+	} else {
+		// アクセスログをDBへ登録する
+		resultProduct := db.RegistAccessLog(c)
+		// URLへのアクセスに対してJSONを返す
+		c.JSON(http.StatusOK, resultProduct)
+	}
+}

@@ -15,6 +15,7 @@ import (
 
 	// constクラス
 
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	cnst "github.com/kemper0530/go-handson/common"
 
@@ -549,4 +550,44 @@ func FetchSignUpAccountMail(token string) int {
 	close(db)
 
 	return cnst.ONE
+}
+
+// アクセスログを登録する
+func RegistAccessLog(c *gin.Context) entity.Rslt {
+	Rslt := entity.Rslt{}
+
+	// 日本時間へ変換
+	jst, _ := time.LoadLocation("Asia/Tokyo")
+	_time := time.Now().In(jst)
+
+	db := open()
+
+	// insert アクセスログ
+	var access_logsIns = entity.Access_logs{
+		User_id:        c.PostForm("user_id"),
+		Event_id:       c.PostForm("event_id"),
+		Access_ip:      c.PostForm("access_ip"),
+		City:           c.PostForm("city"),
+		Region:         c.PostForm("region"),
+		Region_code:    c.PostForm("region_code"),
+		Country_name:   c.PostForm("country_name"),
+		Country_code:   c.PostForm("country_code"),
+		Continent_name: c.PostForm("continent_name"),
+		Continent_code: c.PostForm("continent_code"),
+		Latitude:       c.PostForm("latitude"),
+		Longitude:      c.PostForm("longitude"),
+		Postal:         c.PostForm("postal"),
+		Calling_code:   c.PostForm("calling_code"),
+		Created_at:     _time,
+	}
+
+	// アクセスログにInsert
+	db.Create(&access_logsIns)
+
+	close(db)
+
+	Rslt.Responce = cnst.JsonStatusOK
+	Rslt.Result = cnst.ONE
+
+	return Rslt
 }
