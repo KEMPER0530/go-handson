@@ -71,6 +71,8 @@ func FetchLoginInfo(c *gin.Context) {
 		password := c.PostForm("password")
 
 		if len(username) == cnst.ZERO || len(password) == cnst.ZERO {
+			log.Printf(username)
+			log.Printf(password)
 			log.Panic("Error nothing URL parameter!!")
 		}
 
