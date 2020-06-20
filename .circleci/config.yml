@@ -26,7 +26,7 @@ jobs:
             - "46:4c:fd:fd:5f:a4:25:e4:a1:0e:be:a6:18:d5:98:32"
       - run:
           name: DockerImage Build
-          command: ssh ${USER_NAME}@${HOST_NAME} 'cd /work/docker-portfolio/go-docker/app/go-handson && git pull origin master && cd /work/docker-portfolio/ && docker stop go_portfolio && docker rm go_portfolio && docker rmi -f docker-portfolio_goapp golang && docker-compose build'
+          command: ssh ${USER_NAME}@${HOST_NAME} 'cd /work/docker-portfolio/go-docker/app/go-handson && git pull origin master && cd /work/docker-portfolio/ && docker stop go_portfolio && docker rm go_portfolio && docker rmi -f docker-portfolio_goapp golang && docker-compose build goapp'
   # EC2にSSH接続し、コンテナを実行
   deploy:
     machine:
