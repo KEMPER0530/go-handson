@@ -593,7 +593,7 @@ func RegistAccessLog(c *gin.Context) entity.Rslt {
 }
 
 // Lambdaからリクエストされた内容を登録する
-func FetchRegistSESLog(c *gin.Context) entity.Rslt {
+func RegistSESLog(c *gin.Context) entity.Rslt {
 
 	mail_send_rslt := []entity.Mail_send_rslt{}
 	Rslt := entity.Rslt{}
