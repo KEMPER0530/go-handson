@@ -214,22 +214,23 @@ func TestFetchNewsInfo(t *testing.T) {
 	t.Log("END TestFetchNewsInfo")
 }
 
-// func TestFetchRegistBounce(t *testing.T) {
-// 	t.Log("START TestFetchRegistBounce")
+func TestFetchRegistBounce(t *testing.T) {
+	t.Log("START TestFetchRegistBounce")
 
-// 	gin.SetMode(gin.TestMode)
-// 	router := serve()
-// 	// router := gin.Default()
-// 	router.Use(gin.Logger())
+	gin.SetMode(gin.TestMode)
+	router := serve()
+	// router := gin.Default()
+	router.Use(gin.Logger())
 
-// 	// router.GET("/api/actuaterHealth", mockHandler)
-// 	req, _ := http.NewRequest("POST", "/api/fetchRegistBounce", nil)
-// 	rec := httptest.NewRecorder()
-// 	router.ServeHTTP(rec, req)
-// 	assert.Equal(t, http.StatusOK, rec.Code)
+	//rec := router.GET("/api/fetchRegistBounce", mockHandler)
+	req, _ := http.NewRequest("POST", "/api/fetchRegistBounce", nil)
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, req)
+	assert.Equal(t, http.StatusOK, rec.Code)
+	//assert.Equal(t, http.StatusOK, rec)
 
-// 	t.Log("END TestFetchRegistBounce")
-// }
+	t.Log("END TestFetchRegistBounce")
+}
 
 func mockHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{

@@ -297,8 +297,17 @@ func FetchRegistAccessLog(c *gin.Context) {
 // Lambdaからリクエストされた内容を登録する
 func FetchRegistBounce(c *gin.Context) {
 
-	resultProduct := db.RegistBounce(c)
+	messageId := c.PostForm("messageId")
 
-	// URLへのアクセスに対してJSONを返す
-	c.JSON(http.StatusOK, resultProduct)
+	if len(messageId) == cnst.ZERO {
+		// URLへのアクセスに対してJSONを返す
+		c.JSON(http.StatusOK, gin.H{
+						"Responce": cnst.JsonStatusOK,
+						"Result": cnst.ONE,
+        })
+	}else{
+		resultProduct := db.RegistBounce(c)
+		// URLへのアクセスに対してJSONを返す
+		c.JSON(http.StatusOK, resultProduct)
+	}
 }

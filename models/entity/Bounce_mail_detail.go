@@ -2,7 +2,7 @@ package entity
 
 type Bounce_mail_detail struct {
 	Send_no         int    `json:"username"`
-	Msg_id          string `json:"msg_id"`
+	Msg_id_ses      string `json:"msg_id_ses"`
 	Addresser       string `json:"addresser"`
 	Timestamp       int    `json:"timestamp"`
 	Smtp_command    string `json:"smtp_command"`
