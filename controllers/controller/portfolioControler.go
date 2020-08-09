@@ -295,10 +295,10 @@ func FetchRegistAccessLog(c *gin.Context) {
 }
 
 // Lambdaからリクエストされた内容を登録する
-func FetchRegistSESLog(c *gin.Context) {
+func FetchRegistBounce(c *gin.Context) {
 
-		resultProduct := db.RegistSESLog(c)
+	resultProduct := db.RegistBounce(c)
 
-		// URLへのアクセスに対してJSONを返す
-		c.JSON(http.StatusOK, resultProduct)
+	// URLへのアクセスに対してJSONを返す
+	c.JSON(http.StatusOK, resultProduct)
 }

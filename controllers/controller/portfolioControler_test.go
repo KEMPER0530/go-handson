@@ -48,6 +48,3 @@ func TestFetchMailAdrInfo(t *testing.T) {
 
 func TestFetchSignUpAccountMail(t *testing.T) {
 }
-
-func TestFetchRegistSESLog(t *testing.T) {
-}
