@@ -591,3 +591,56 @@ func RegistAccessLog(c *gin.Context) entity.Rslt {
 
 	return Rslt
 }
+
+// Lambdaからリクエストされた内容を登録する
+func RegistBounce(c *gin.Context) entity.Rslt {
+
+	//mail_send_rslt := []entity.Mail_send_rslt{}
+	Rslt := entity.Rslt{}
+
+	// messageId := c.PostForm("messageId")
+
+	// db := open()
+	// db.First(&mail_send_rslt, "msg_id_ses=?", messageId)
+
+	// // 値の取得ができなかった場合
+	// if len(mail_send_rslt) == cnst.ZERO {
+	// 	Rslt.Responce = cnst.JsonStatusNG
+	// 	Rslt.Result = cnst.ONE
+	// 	return Rslt
+	// }
+
+	// if( c.PostForm("notificationType") == cnst.BOUNCE ) {
+
+	// 	i_timestamp, _ := strconv.Atoi(c.PostForm("timestamp"))
+
+	// 	// bounce_mail_detail へ insert
+	// 	var bounce_mail_detail = entity.Bounce_mail_detail{
+	// 		Send_no:         mail_send_rslt[0].Send_no,
+	// 		Msg_id:          c.PostForm("messageId"),
+	// 		Addresser:       c.PostForm("source"),
+	// 		Timestamp:       i_timestamp,
+	// 		Smtp_command:    c.PostForm("diagnosticCode"),
+	// 		Recipient:       c.PostForm("recipients"),
+	// 		Destination:     c.PostForm("destination"),
+	// 		Reply_code:      c.PostForm("notificationType"),
+	// 		Rhost:           c.PostForm("sourceIp"),
+	// 		Diagnostic_type: c.PostForm("bounceType"),
+	// 		Action:          c.PostForm("action"),
+	// 		Diagnostic_code: c.PostForm("status"),
+	// 		Reason:           c.PostForm("bounceType"),
+	// 		Delivery_status: c.PostForm("notificationType"),
+	// 	}
+
+	// 	// bounce_mail_detailにInsertする
+	// 	db.Create(&bounce_mail_detail)
+
+	// 	// mail_send_rsltをUpdateする
+	// 	db.Model(&mail_send_rslt).Where("msg_id_ses = ?", c.PostForm("messageId")).Update("status", "9")
+
+	// }
+
+	Rslt.Responce = cnst.JsonStatusOK
+	Rslt.Result = cnst.ONE
+	return Rslt
+}

@@ -104,6 +104,9 @@ func serve() *gin.Engine {
 	// アクセスログを登録する
 	router.POST("/api/fetchRegistAccessLog", controller.FetchRegistAccessLog)
 
+	// Lambdaからリクエストされた内容を登録する
+	//router.POST("/api/fetchRegistBounce", controller.FetchRegistBounce)
+
 	return router
 }
 

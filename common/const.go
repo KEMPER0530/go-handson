@@ -35,6 +35,8 @@ const (
 	Rs6LetterIdxBits = 6
 	Rs6LetterIdxMask = 1<<Rs6LetterIdxBits - 1
 	Rs6LetterIdxMax  = 63 / Rs6LetterIdxBits
+
+	BOUNCE  = "Bounce"
 )
 
 var (
