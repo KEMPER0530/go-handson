@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -8,53 +9,45 @@ import (
 	// Gin
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	// config
-	config "github.com/kemper0530/go-handson-lambda/config"
+	config "github.com/kemper0530/go-handson/config"
 	// common
-	common "github.com/kemper0530/go-handson-lambda/common"
+	common "github.com/kemper0530/go-handson/common"
+	// MySQL用ドライバ
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
 	// コントローラー
-	controller "github.com/kemper0530/go-handson-lambda/controllers/controller"
-
-	// aws-lambda-go-api-proxy
-	"context"
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/awslabs/aws-lambda-go-api-proxy/gin"
+	controller "github.com/kemper0530/go-handson/controllers/controller"
 )
 
-var ginLambda *ginadapter.GinLambda
-
 func main() {
-	lambda.Start(Handler)
-}
-
-func init() {
-	// firebaseSDKの読込
-	log.Println("Firebaseファイル読み込み")
-	auth, err := config.SetUpFirebase()
-	log.Println(auth)
+	// 環境変数ファイルの読込
+	err := godotenv.Load(fmt.Sprintf("config/%s.env", os.Getenv("GO_ENV")))
 	if err != nil {
-		log.Println(err)
-		log.Println("Error loading firebase-auth file")
+		log.Fatal("Error loading .env file")
+	}
+	// firebaseSDKの読込
+	auth, err := config.SetUpFirebase()
+	if err != nil {
+		log.Fatal("Error loading firebase-auth file")
 	}
 	// commonに格納する
 	common.Auth = auth
-  log.Println(common.Auth)
+
+	// ポートの取得
+	PORT := os.Getenv("PORT")
 
 	// サーバーを起動する
 	router := serve()
-	ginLambda = ginadapter.New(router)
-}
-
-func Handler(ctx context.Context, req events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-	// If no name is provided in the HTTP request body, throw an error
-	return ginLambda.ProxyWithContext(ctx, req)
+	if err := router.Run(":" + PORT); err != nil {
+		log.Fatal("Server Run Failed.: ", err)
+	}
 }
 
 func serve() *gin.Engine {
+
 	// デフォルトのミドルウェアでginのルーターを作成
 	// Logger と アプリケーションクラッシュをキャッチするRecoveryミドルウェア を保有しています
 	router := gin.Default()
@@ -71,45 +64,48 @@ func serve() *gin.Engine {
 
 	// ルーターの設定
 	// ログインID、パスワードを返却する
-	router.POST("/fetchlogininfo", controller.FetchLoginInfo)
+	router.POST("/api/fetchLoginInfo", controller.FetchLoginInfo)
+
+	// メンバー情報のJSONを返す
+	router.GET("/api/fetchAllMembers", controller.FetchAllMembers)
 
 	// work情報のJSONを返す
-	router.GET("/fetchallworker", controller.FetchAllWorker)
+	router.GET("/api/fetchAllWorker", controller.FetchAllWorker)
 
 	// クレジットカード情報を登録し、結果のJSONを返す
-	router.POST("/fetchcreditinforegist", controller.FetchCreditInfoRegist)
+	router.POST("/api/fetchCreditInfoRegist", controller.FetchCreditInfoRegist)
 
 	// お問合せフォーム内容を登録し、メールを送信するかつ結果のJSONを返す
-	router.POST("/fetchsendmailregist", controller.FetchSendMailRegist)
+	router.POST("/api/fetchSendMailRegist", controller.FetchSendMailRegist)
 
 	// Goアプリのステータスを返却する
-	router.GET("/actuaterhealth", controller.ActuaterHealth)
+	router.GET("/api/actuaterHealth", controller.ActuaterHealth)
 
 	// profile情報のJSONを返す
-	router.GET("/fetchprofileinfo", controller.FetchProfileInfo)
+	router.GET("/api/fetchProfileInfo", controller.FetchProfileInfo)
 
 	// アカウント情報を仮登録し、結果をJSONを返す
-	router.POST("/fetchregistaccount", controller.FetchRegistAccount)
+	router.POST("/api/fetchRegistAccount", controller.FetchRegistAccount)
 
 	// 仮登録後にメール送信する結果をJSONを返す
-	router.POST("/fetchregistaccountmail", controller.FetchRegistAccountMail)
+	router.POST("/api/fetchRegistAccountMail", controller.FetchRegistAccountMail)
 
 	// ログインIDを受取り、氏名とメールアドレスを返却する
-	router.POST("/fetchmailadrinfo", controller.FetchMailAdrInfo)
+	router.POST("/api/fetchMailAdrInfo", controller.FetchMailAdrInfo)
 
 	// 仮パスワードのリンクを押下された場合の挙動
-	router.Static("/static/css", "./static/css")
+	//router.Static("/static/css", "./static/css")
 	router.LoadHTMLGlob("templates/*.tmpl")
-	router.GET("/fetchsignupaccountmail", controller.FetchSignUpAccountMail)
+	router.GET("/api/fetchSignUpAccountMail", controller.FetchSignUpAccountMail)
 
 	// NEWSAPIの記事を取得し、フロントへ返却する
-	router.POST("/fetchnewsinfo", controller.FetchNewsInfo)
+	router.POST("/api/fetchNewsInfo", controller.FetchNewsInfo)
 
 	// アクセスログを登録する
-	router.POST("/fetchregistaccesslog", controller.FetchRegistAccessLog)
+	router.POST("/api/fetchRegistAccessLog", controller.FetchRegistAccessLog)
 
 	// Lambdaからリクエストされた内容を登録する
-	router.POST("/fetchregistbounce", controller.FetchRegistBounce)
+	router.POST("/api/fetchRegistBounce", controller.FetchRegistBounce)
 
 	return router
 }

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"log"
 	"reflect"
-	"os"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
@@ -14,10 +13,10 @@ import (
 	"github.com/jinzhu/gorm"
 
 	// constクラス
-	cnst "github.com/kemper0530/go-handson-lambda/common"
+	cnst "github.com/kemper0530/go-handson/common"
 
 	// エンティティ(データベースのテーブルの行に対応)
-	entity "github.com/kemper0530/go-handson-lambda/models/entity"
+	entity "github.com/kemper0530/go-handson/models/entity"
 )
 
 func FetchMailSendSelect() entity.Rslt {
@@ -90,12 +89,9 @@ func SendEmailPrepare(db *gorm.DB) bool {
 
 func sendSESEmail(from string, to string, title string, body string) (*string, error) {
 	// 環境変数ファイルの読込
-	// AWS_REGION := awsEnvload("AWS_REGION")
-	// AWS_ACCESS_KEY_ID := awsEnvload("AWS_ACCESS_KEY_ID")
-	// AWS_SECRET_KEY := awsEnvload("AWS_SECRET_KEY")
-	AWS_REGION := os.Getenv("AWS_SES_REGION")
-	AWS_ACCESS_KEY_ID := os.Getenv("AWS_SES_ACCESS_KEY_ID")
-	AWS_SECRET_KEY := os.Getenv("AWS_SES_SECRET_KEY")
+	AWS_REGION := awsEnvload("AWS_REGION")
+	AWS_ACCESS_KEY_ID := awsEnvload("AWS_ACCESS_KEY_ID")
+	AWS_SECRET_KEY := awsEnvload("AWS_SECRET_KEY")
 
 	//AWS-SESの設定情報を格納する
 	awsSession := session.New(&aws.Config{

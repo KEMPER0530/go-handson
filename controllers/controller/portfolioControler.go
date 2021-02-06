@@ -9,16 +9,16 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/kemper0530/go-handson-lambda/models/entity"
+	"github.com/kemper0530/go-handson/models/entity"
 
 	// authクラス
-	authcnfg "github.com/kemper0530/go-handson-lambda/config"
+	authcnfg "github.com/kemper0530/go-handson/config"
 	// constクラス
-	cnst "github.com/kemper0530/go-handson-lambda/common"
+	cnst "github.com/kemper0530/go-handson/common"
 	// DBアクセス用モジュール
-	db "github.com/kemper0530/go-handson-lambda/models/db"
+	db "github.com/kemper0530/go-handson/models/db"
 	// httpアクセス用モジュール
-	rest "github.com/kemper0530/go-handson-lambda/models/rest"
+	rest "github.com/kemper0530/go-handson/models/rest"
 )
 
 // メールバッチ処理
@@ -155,6 +155,7 @@ func FetchProfileInfo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, errMsg)
 	} else {
 		resultProducts := db.FetchProfileInfo()
+
 		// URLへのアクセスに対してJSONを返す
 		c.JSON(http.StatusOK, resultProducts)
 	}
