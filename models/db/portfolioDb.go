@@ -17,10 +17,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	cnst "github.com/kemper0530/go-handson/common"
+	cnst "github.com/kemper0530/go-handson-lambda/common"
 
 	// エンティティ(データベースのテーブルの行に対応)
-	entity "github.com/kemper0530/go-handson/models/entity"
+	entity "github.com/kemper0530/go-handson-lambda/models/entity"
 )
 
 // Actuator
@@ -39,6 +39,7 @@ func ActuaterHealth() entity.ActuatorRslt {
 	actuatorRslt.Time = time.Now().In(jst)
 	actuatorRslt.Host, _ = os.Hostname()
 
+	log.Println(actuatorRslt)
 	return actuatorRslt
 }
 

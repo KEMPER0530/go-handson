@@ -2,12 +2,9 @@ package db
 
 import (
 	// フォーマットI/O
-
 	"fmt"
 	"os"
-
 	// Go言語のORM
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -24,7 +21,6 @@ func open() *gorm.DB {
 
 	//mysqlへ接続
 	db, err := gorm.Open(dbms, connect)
-
 	//接続でエラーが発生した場合の処理
 	if err != nil {
 		panic(err.Error())
@@ -32,13 +28,10 @@ func open() *gorm.DB {
 
 	// DBエンジンを「InnoDB」に設定
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
-
 	// 詳細なログを表示
 	db.LogMode(true)
-
 	// 登録するテーブル名を単数形にする（デフォルトは複数形）
 	db.SingularTable(true)
-
 	fmt.Println("db connected: ", &db)
 	return db
 }
